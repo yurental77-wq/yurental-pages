@@ -107,17 +107,22 @@ const PRINTER_IMG_POOL = [
   'https://gi.esmplus.com/khon21/광고배너/26_5.png',
 ];
 
-function pickImg(jimyeong, sangho) {
-  const s = jimyeong + sangho;
+function assignImgsForPage(seedStr, count) {
   let h = 0;
-  for (let i = 0; i < s.length; i++) h += s.charCodeAt(i);
-  return PRINTER_IMG_POOL[h % PRINTER_IMG_POOL.length];
+  for (let i = 0; i < seedStr.length; i++) h += seedStr.charCodeAt(i);
+  const pool = PRINTER_IMG_POOL.slice();
+  // seeded Fisher-Yates shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return Array.from({ length: count }, (_, i) => pool[i % pool.length]);
 }
 
-function makeCard(d) {
+function makeCard(d, imgUrl) {
   const consultUrl = getConsultUrl(d.sangho);
   const phone = PHONE_MAP[consultUrl] || '1600-3165';
-  const imgUrl = pickImg(d.jimyeong, d.sangho);
   return `  <div class="card">
     <div class="card-thumb"><img src="${imgUrl}" alt="${d.sangho}" /></div>
     <div class="card-body">
@@ -145,7 +150,8 @@ function renderPage(item, globalIdx) {
   const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
   const keywords = `${category},${product},${region}${product},복합기렌탈,복합기임대,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
-  const cardsHtml = dealers.map(makeCard).join('\n\n');
+  const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
+  const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
   const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
 
   let html = PAGE_TEMPLATE;

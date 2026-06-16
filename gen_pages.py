@@ -88,16 +88,16 @@ PRINTER_IMG_POOL = [
     'https://gi.esmplus.com/khon21/광고배너/26_5.png',
 ]
 
-def pick_img(jimyeong, sangho):
-    s = jimyeong + sangho
-    h = sum(ord(c) for c in s)
-    return PRINTER_IMG_POOL[h % len(PRINTER_IMG_POOL)]
+def assign_imgs_for_page(seed_str, count):
+    rng = random.Random(sum(ord(c) for c in seed_str))
+    pool = PRINTER_IMG_POOL[:]
+    rng.shuffle(pool)
+    return [pool[i % len(pool)] for i in range(count)]
 
 # 임의 좌표/주소 생성용 기본값 (지역명 기반 안내 문구만 사용, 정밀주소는 추정값 표기)
-def make_card(d, region):
+def make_card(d, region, img_url):
     consult_url = get_consult_url(d['sangho'])
     phone = PHONE_MAP.get(consult_url, '1600-3165')
-    img_url = pick_img(d['jimyeong'], d['sangho'])
     return f'''  <div class="card">
     <div class="card-thumb"><img src="{img_url}" alt="{d['sangho']}" /></div>
     <div class="card-body">
@@ -237,7 +237,8 @@ for idx, row in enumerate(samples):
     if not matched:
         matched = dealers[:5]
 
-    cards_html = '\n\n'.join(make_card(d, region) for d in matched)
+    imgs = assign_imgs_for_page(f'{region}-{product}', len(matched))
+    cards_html = '\n\n'.join(make_card(d, region, imgs[i]) for i, d in enumerate(matched))
     faq_html = build_faq_html(region, product, seed=f'{region}-{product}-{idx}')
 
     slug = slugify(region, product)
