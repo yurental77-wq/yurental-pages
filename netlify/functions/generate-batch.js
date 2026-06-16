@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { getStore } = require('@netlify/blobs');
 
 const DEFAULT_BATCH_SIZE = 50;
 const MAX_BATCH_SIZE = 300; // GitHub API/함수 실행시간 한도를 고려한 1회 최대치
@@ -76,7 +75,6 @@ function seededRandom(seedStr) {
 function sampleFAQ(region, product, seedStr) {
   const rnd = seededRandom(seedStr);
   const pool = FAQ_POOL.slice();
-  // Fisher-Yates partial shuffle, take first 5
   for (let i = pool.length - 1; i > pool.length - 6; i--) {
     const j = Math.floor(rnd() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -165,9 +163,11 @@ function renderSitemap(publishedItems) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
 }
 
-// ---- GitHub commit helpers ----
+// ---- GitHub API helpers ----
+const PROGRESS_PATH = 'progress.json';
+
 async function ghApi(pathPart, opts = {}) {
-  const { GITHUB_TOKEN, GITHUB_REPO, GITHUB_BRANCH } = process.env;
+  const { GITHUB_TOKEN, GITHUB_REPO } = process.env;
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}${pathPart}`, {
     ...opts,
     headers: {
@@ -179,6 +179,18 @@ async function ghApi(pathPart, opts = {}) {
   });
   if (!res.ok) throw new Error(`GitHub API ${pathPart} failed: ${res.status} ${await res.text()}`);
   return res.json();
+}
+
+async function readProgress() {
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  try {
+    const file = await ghApi(`/contents/${PROGRESS_PATH}?ref=${branch}`);
+    const json = Buffer.from(file.content, 'base64').toString('utf8');
+    return JSON.parse(json);
+  } catch (e) {
+    if (e.message.includes('404')) return null;
+    throw e;
+  }
 }
 
 async function commitFiles(files, message) {
@@ -222,6 +234,10 @@ exports.handler = async function (event) {
     return { statusCode: 401, body: JSON.stringify({ error: '관리자 비밀번호가 올바르지 않습니다.' }) };
   }
 
+  if (!process.env.GITHUB_TOKEN || !process.env.GITHUB_REPO) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'GITHUB_TOKEN 또는 GITHUB_REPO 환경변수가 설정되지 않았습니다.' }) };
+  }
+
   let requestedCount = DEFAULT_BATCH_SIZE;
   try {
     const body = event.body ? JSON.parse(event.body) : {};
@@ -233,8 +249,7 @@ exports.handler = async function (event) {
   if (requestedCount > MAX_BATCH_SIZE) requestedCount = MAX_BATCH_SIZE;
 
   try {
-    const store = getStore('progress');
-    let state = await store.get('state', { type: 'json' });
+    let state = await readProgress();
 
     if (!state) {
       // 최초 1회: 우선순위 지역(전라북도)을 먼저 섞어서 배치하고, 나머지를 뒤에 이어붙임
@@ -287,19 +302,22 @@ exports.handler = async function (event) {
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
 
-    await commitFiles(filesToCommit, `[자동생성] ${batchItems.length}개 페이지 추가 (총 ${newPublished.length}/${state.order.length})`);
+    const newState = {
+      order: state.order,
+      nextIndex: state.nextIndex + batchItems.length,
+      published: newPublished,
+    };
+    filesToCommit.push({ path: PROGRESS_PATH, content: JSON.stringify(newState) });
 
-    state.nextIndex += batchItems.length;
-    state.published = newPublished;
-    await store.setJSON('state', state);
+    await commitFiles(filesToCommit, `[자동생성] ${batchItems.length}개 페이지 추가 (총 ${newPublished.length}/${state.order.length})`);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         done: false,
         addedThisBatch: batchItems.length,
-        totalPublished: state.published.length,
-        totalRows: state.order.length,
+        totalPublished: newState.published.length,
+        totalRows: newState.order.length,
       }),
     };
   } catch (err) {
