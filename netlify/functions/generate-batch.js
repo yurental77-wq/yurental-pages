@@ -326,7 +326,20 @@ exports.handler = async function (event) {
       const { path: p, content } = renderProvinceHub(province, items);
       filesToCommit.push({ path: p, content });
     }
-    const topHub = renderTopHub(Object.keys(provinceGroups));
+
+    // pages/ 디렉토리의 실제 province 폴더 전체를 읽어 합산 (수동 추가된 폴더 포함)
+    let allProvinces = new Set(Object.keys(provinceGroups));
+    try {
+      const branch = process.env.GITHUB_BRANCH || 'main';
+      const pagesTree = await ghApi(`/contents/pages?ref=${branch}`);
+      if (Array.isArray(pagesTree)) {
+        for (const entry of pagesTree) {
+          if (entry.type === 'dir') allProvinces.add(entry.name);
+        }
+      }
+    } catch (e) { /* pages/ 없으면 무시 */ }
+
+    const topHub = renderTopHub([...allProvinces].sort());
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
