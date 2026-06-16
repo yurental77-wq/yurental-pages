@@ -72,12 +72,30 @@ def get_consult_url(sangho):
             return url
     return DEFAULT_CONSULT_URL
 
+# 복합기/프린터/복사기 사진 풀 (업체별로 다르게 배정)
+PRINTER_IMG_POOL = [
+    'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=220&q=70',
+    'https://images.unsplash.com/photo-1503694978374-8a2fa686963a?w=220&q=70',
+    'https://images.unsplash.com/photo-1581079289196-67865ea83118?w=220&q=70',
+    'https://images.unsplash.com/photo-1642969164999-979483e21601?w=220&q=70',
+    'https://images.unsplash.com/photo-1510511336377-1a9caa095849?w=220&q=70',
+    'https://images.unsplash.com/photo-1535350356005-fd52b3b524fb?w=220&q=70',
+    'https://images.unsplash.com/photo-1611117775350-ac3950990985?w=220&q=70',
+    'https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?w=220&q=70',
+]
+
+def pick_img(jimyeong, sangho):
+    s = jimyeong + sangho
+    h = sum(ord(c) for c in s)
+    return PRINTER_IMG_POOL[h % len(PRINTER_IMG_POOL)]
+
 # 임의 좌표/주소 생성용 기본값 (지역명 기반 안내 문구만 사용, 정밀주소는 추정값 표기)
 def make_card(d, region):
     consult_url = get_consult_url(d['sangho'])
     phone = PHONE_MAP.get(consult_url, '1600-3165')
+    img_url = pick_img(d['jimyeong'], d['sangho'])
     return f'''  <div class="card">
-    <div class="card-thumb"><img src="https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=220&q=70" alt="{d['sangho']}" /></div>
+    <div class="card-thumb"><img src="{img_url}" alt="{d['sangho']}" /></div>
     <div class="card-body">
       <div class="card-name">{d['sangho']} - {d['jimyeong']}</div>
       <span class="card-badge">복합기렌탈</span>
