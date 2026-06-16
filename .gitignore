@@ -1,0 +1,15 @@
+SECRETS_LOCAL.txt
+node_modules/
+.netlify/
+*.log
+excel_all.txt
+excel_check.txt
+data_check.txt
+count_result.txt
+banner_b64.txt
+cards_output.html
+sheet_decoded.txt
+sheetnames.txt
+jb_check.txt
+dataset_check.txt
+.claude/
