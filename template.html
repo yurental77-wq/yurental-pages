@@ -55,7 +55,8 @@
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.2rem; } }
 
     /* 편집 모드 */
-    #edit-toggle-btn { position:fixed; bottom:24px; right:24px; z-index:9999; background:#1a4fa0; color:#fff; border:none; border-radius:50px; padding:12px 22px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+    #edit-toggle-btn { display:none; position:fixed; bottom:24px; right:24px; z-index:9999; background:#1a4fa0; color:#fff; border:none; border-radius:50px; padding:12px 22px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+    #edit-toggle-btn.admin-visible { display:block; }
     #edit-toggle-btn.active { background:#e63946; }
     #save-btn { position:fixed; bottom:24px; right:175px; z-index:9999; background:#2a9d5c; color:#fff; border:none; border-radius:50px; padding:12px 22px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2); display:none; }
     #edit-guide { display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%); background:#e63946; color:#fff; padding:10px 24px; border-radius:8px; font-size:0.85rem; z-index:9998; white-space:nowrap; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
@@ -80,11 +81,7 @@
     아래에서 <strong>전국 주요 지역별 복합기렌탈 업체</strong> 10곳의 주소·연락처·지도를 한눈에 확인하세요.
   </div>
 
-  <div class="banner-wrap">
-    <a href="http://hanarental.net/" target="_blank" rel="noopener">
-      <img src="{{BANNER}}" alt="하나렌탈 배너" />
-    </a>
-  </div>
+  <div class="banner-wrap" id="banner-top"></div>
 
   <div class="seo-q-box">
     <h2>복합기렌탈 비용 상담 전 꼭 확인해야 할 곳은 어디인가요?</h2>
@@ -102,11 +99,7 @@
 
 {{CARDS}}
 
-  <div class="banner-wrap">
-    <a href="http://hanarental.net/" target="_blank" rel="noopener">
-      <img src="{{BANNER}}" alt="하나렌탈 배너 - 복합기렌탈 상담 신청" />
-    </a>
-  </div>
+  <div class="banner-wrap" id="banner-bottom"></div>
 
   <div class="faq-wrap">
     <div class="section-title">❓ FAQ 복합기렌탈 자주 묻는 질문</div>
@@ -188,12 +181,62 @@
   <p style="margin-top:6px;">© 2026 복합기렌탈 전국 모음. All rights reserved.</p>
 </footer>
 
+<!-- 랜덤 배너 (하나렌탈 / 노란우산렌탈 위·아래 위치 + 이미지 4종 중 랜덤) -->
+<script>
+(function () {
+  var BRANDS = [
+    {
+      link: 'http://hanarental.net/',
+      imgs: [
+        'https://gi.esmplus.com/khon21/광고배너/ha1.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha2.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha3.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha4.png'
+      ],
+      alt: '하나렌탈 배너'
+    },
+    {
+      link: 'https://yurental.com/',
+      imgs: [
+        'https://gi.esmplus.com/khon21/광고배너/yu1.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu2.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu3.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu4.png'
+      ],
+      alt: '노란우산렌탈 배너'
+    }
+  ];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  var order = BRANDS.slice();
+  if (Math.random() < 0.5) order.reverse();
+
+  function renderBanner(elId, brand) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = '<a href="' + brand.link + '" target="_blank" rel="noopener">' +
+      '<img src="' + pick(brand.imgs) + '" alt="' + brand.alt + '" /></a>';
+  }
+
+  renderBanner('banner-top', order[0]);
+  renderBanner('banner-bottom', order[1]);
+})();
+</script>
+
 <!-- 편집 모드 -->
 <div id="edit-guide">✏️ 파란 점선 영역을 클릭해서 바로 수정하세요! 수정 후 💾 HTML 저장 버튼을 누르세요.</div>
 <button id="edit-toggle-btn" onclick="toggleEdit()">✏️ 편집 모드</button>
 <button id="save-btn" onclick="saveHTML()">💾 HTML 저장</button>
 
 <script>
+// 관리자 페이지(admin.html)에서 로그인 성공 시 localStorage에 표시를 남기면 편집 모드 버튼이 보임
+(function () {
+  if (localStorage.getItem('hanarental_admin_session') === 'true') {
+    document.getElementById('edit-toggle-btn').classList.add('admin-visible');
+  }
+})();
+
 var editMode = false;
 var targets = ['.card-name','.card-info','.card-badge','.faq-q','.faq-a','.site-header h1','.site-header p','.intro-box','.site-footer p'];
 function toggleEdit() {

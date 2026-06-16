@@ -2,8 +2,7 @@ import csv, io, base64, os, re, random, openpyxl
 
 ROOT = 'C:/Users/pc/Downloads/3333'
 
-# 1. 배너 이미지 (외부 URL 직접 참조 — base64 미사용으로 페이지 용량 절감)
-BANNER = 'https://gi.esmplus.com/khon21/banner.png'
+# 배너는 page_template.html / province_hub_template.html 내 JS가 런타임에 랜덤 렌더링함 (하나렌탈/노란우산렌탈 4종)
 
 # 이 사이트(지역별 페이지 모음) 자체의 도메인 — 도메인 정해지면 이 값만 바꾸면 됨
 SITE_URL = 'https://your-domain-here.netlify.app'
@@ -234,7 +233,6 @@ for idx, row in enumerate(samples):
         .replace('{{PROVINCE}}', province)
         .replace('{{CARDS}}', cards_html)
         .replace('{{FAQ}}', faq_html)
-        .replace('{{BANNER}}', BANNER)
     )
 
     page_dir = f'{ROOT}/pages/{province}/{slug}'

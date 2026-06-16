@@ -70,11 +70,7 @@
     아래에서 <strong>종로구 인근 복합기렌탈 업체</strong>의 위치·연락처·지도를 한눈에 확인하세요.
   </div>
 
-  <div class="banner-wrap">
-    <a href="http://hanarental.net/" target="_blank" rel="noopener">
-      <img src="https://gi.esmplus.com/khon21/banner.png" alt="하나렌탈 배너" />
-    </a>
-  </div>
+  <div class="banner-wrap" id="banner-top"></div>
 
   <div class="seo-q-box">
     <h2>서울 종로구복합기렌탈 임대/대여 상담 전 확인 사항은 무엇인가요?</h2>
@@ -131,11 +127,7 @@
     </div>
   </div>
 
-  <div class="banner-wrap">
-    <a href="http://hanarental.net/" target="_blank" rel="noopener">
-      <img src="https://gi.esmplus.com/khon21/banner.png" alt="하나렌탈 배너 - 복합기렌탈 상담 신청" />
-    </a>
-  </div>
+  <div class="banner-wrap" id="banner-bottom"></div>
 
   <div class="faq-wrap">
     <div class="section-title">❓ FAQ 복합기렌탈 자주 묻는 질문</div>
@@ -173,6 +165,49 @@
   <p>본 페이지는 종로구 복합기렌탈 업체 정보를 제공하는 안내 페이지입니다.</p>
   <p style="margin-top:6px;">© 2026 복합기렌탈 전국 모음. All rights reserved.</p>
 </footer>
+
+<!-- 랜덤 배너 (하나렌탈 / 노란우산렌탈 위·아래 위치 + 이미지 4종 중 랜덤) -->
+<script>
+(function () {
+  var BRANDS = [
+    {
+      link: 'http://hanarental.net/',
+      imgs: [
+        'https://gi.esmplus.com/khon21/광고배너/ha1.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha2.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha3.png',
+        'https://gi.esmplus.com/khon21/광고배너/ha4.png'
+      ],
+      alt: '하나렌탈 배너'
+    },
+    {
+      link: 'https://yurental.com/',
+      imgs: [
+        'https://gi.esmplus.com/khon21/광고배너/yu1.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu2.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu3.png',
+        'https://gi.esmplus.com/khon21/광고배너/yu4.png'
+      ],
+      alt: '노란우산렌탈 배너'
+    }
+  ];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  var order = BRANDS.slice();
+  if (Math.random() < 0.5) order.reverse();
+
+  function renderBanner(elId, brand) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = '<a href="' + brand.link + '" target="_blank" rel="noopener">' +
+      '<img src="' + pick(brand.imgs) + '" alt="' + brand.alt + '" /></a>';
+  }
+
+  renderBanner('banner-top', order[0]);
+  renderBanner('banner-bottom', order[1]);
+})();
+</script>
 
 <script>
   document.querySelectorAll('.faq-q').forEach(function(q) {

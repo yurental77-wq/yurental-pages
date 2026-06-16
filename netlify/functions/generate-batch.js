@@ -8,7 +8,7 @@ const DATA = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/data_rows.jso
 const PAGE_TEMPLATE = fs.readFileSync(path.join(__dirname, 'templates/page_template.html'), 'utf8');
 const HUB_TEMPLATE = fs.readFileSync(path.join(__dirname, 'templates/province_hub_template.html'), 'utf8');
 
-const BANNER = 'https://gi.esmplus.com/khon21/banner.png';
+// 배너는 page_template.html 내 JS가 런타임에 랜덤 렌더링함 (하나렌탈/노란우산렌탈 4종)
 // 이 사이트(지역별 페이지 모음) 자체의 도메인 — 도메인 정해지면 Netlify 환경변수 SITE_URL에 등록
 const SITE_URL = process.env.SITE_URL || 'https://your-domain-here.netlify.app';
 
@@ -132,7 +132,7 @@ function renderPage(item, globalIdx) {
     '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{META_TITLE}}': metaTitle,
     '{{META_DESC}}': metaDesc, '{{KEYWORDS}}': keywords, '{{CANONICAL}}': canonical,
     '{{REGION}}': region, '{{PRODUCT}}': product, '{{PROVINCE}}': province,
-    '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml, '{{BANNER}}': BANNER,
+    '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml,
   };
   for (const [k, v] of Object.entries(reps)) html = html.split(k).join(v);
   return { path: `pages/${province}/${slug}/index.html`, content: html };

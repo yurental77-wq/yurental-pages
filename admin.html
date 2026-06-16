@@ -76,12 +76,33 @@
 <script>
   let adminPw = '';
 
-  function login() {
+  async function login() {
     adminPw = document.getElementById('pwInput').value;
     if (!adminPw) {
       document.getElementById('loginStatus').textContent = '비밀번호를 입력하세요.';
       return;
     }
+    document.getElementById('loginStatus').textContent = '확인 중...';
+    try {
+      const res = await fetch('/.netlify/functions/status', {
+        headers: { 'x-admin-password': adminPw },
+      });
+      if (res.status === 401) {
+        document.getElementById('loginStatus').textContent = '❌ 비밀번호가 올바르지 않습니다.';
+        return;
+      }
+      if (!res.ok) {
+        document.getElementById('loginStatus').textContent = '❌ 서버 오류가 발생했습니다.';
+        return;
+      }
+    } catch (e) {
+      document.getElementById('loginStatus').textContent = '❌ 네트워크 오류: ' + e.message;
+      return;
+    }
+
+    // 인증 성공 — 같은 브라우저(같은 도메인)에서 메인 페이지의 편집 모드 버튼이 보이게 표시
+    localStorage.setItem('hanarental_admin_session', 'true');
+
     document.getElementById('loginWrap').classList.remove('show');
     document.getElementById('genWrap').classList.add('show');
     loadStatus();

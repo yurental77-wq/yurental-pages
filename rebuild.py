@@ -1,6 +1,6 @@
 import csv, io, base64
 
-banner_b64 = 'https://gi.esmplus.com/khon21/banner.png'
+# 배너는 template.html 내 JS가 런타임에 랜덤 렌더링함 (하나렌탈/노란우산렌탈 4종)
 
 cards_data = [
     {'j':'안산','s':'하나렌탈 경기중부지사','k':'복합기렌탈','jb':'경기도 안산시 단원구 원초로 24-1','dr':'경기도 안산시 단원구 광덕대로 52','c':'37.3219, 126.8308','img':'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=220&q=70','nq':'안산 복합기렌탈','gq':'복합기렌탈+안산'},
@@ -58,7 +58,7 @@ all_cards = '\n\n'.join(card(d) for d in cards_data)
 with open('C:/Users/pc/Downloads/3333/template.html', 'r', encoding='utf-8') as f:
     tmpl = f.read()
 
-html = tmpl.replace('{{BANNER}}', banner_b64).replace('{{CARDS}}', all_cards)
+html = tmpl.replace('{{CARDS}}', all_cards)
 
 with open('C:/Users/pc/Downloads/3333/index.html', 'w', encoding='utf-8') as f:
     f.write(html)
