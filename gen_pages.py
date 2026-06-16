@@ -5,7 +5,7 @@ ROOT = 'C:/Users/pc/Downloads/3333'
 # 배너는 page_template.html / province_hub_template.html 내 JS가 런타임에 랜덤 렌더링함 (하나렌탈/노란우산렌탈 4종)
 
 # 이 사이트(지역별 페이지 모음) 자체의 도메인 — 도메인 정해지면 이 값만 바꾸면 됨
-SITE_URL = 'https://your-domain-here.netlify.app'
+SITE_URL = 'https://hana-yurental.netlify.app'
 
 # 2. 업체 시트 데이터 로드
 with open(f'{ROOT}/sheet.csv', 'rb') as f:
