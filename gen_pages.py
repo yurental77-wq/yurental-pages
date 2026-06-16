@@ -72,29 +72,34 @@ def get_consult_url(sangho):
             return url
     return DEFAULT_CONSULT_URL
 
-# 카드 썸네일용 배경색 풀 (업체별로 다르게 배정, 아이콘은 항상 복합기 아이콘으로 고정해 정확성 보장)
-THUMB_COLOR_POOL = ['#dce8ff', '#ffe8d6', '#e3f6e0', '#fde8ee', '#e6e0fb', '#fff3c4', '#dff7f4', '#ffe0e0']
+# 실제 업체 사진 풀 (업체별로 다르게 배정)
+PRINTER_IMG_POOL = [
+    'https://gi.esmplus.com/khon21/광고배너/25_2.png',
+    'https://gi.esmplus.com/khon21/광고배너/24_3.png',
+    'https://gi.esmplus.com/khon21/광고배너/24_2.png',
+    'https://gi.esmplus.com/khon21/광고배너/23_3.png',
+    'https://gi.esmplus.com/khon21/광고배너/41_6.png',
+    'https://gi.esmplus.com/khon21/광고배너/40_4.png',
+    'https://gi.esmplus.com/khon21/광고배너/39_3.png',
+    'https://gi.esmplus.com/khon21/광고배너/38_2.png',
+    'https://gi.esmplus.com/khon21/광고배너/37_3.png',
+    'https://gi.esmplus.com/khon21/광고배너/34_5.png',
+    'https://gi.esmplus.com/khon21/광고배너/27_2.png',
+    'https://gi.esmplus.com/khon21/광고배너/26_5.png',
+]
 
-PRINTER_ICON_SVG = '''<svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-  <rect x="10" y="8" width="36" height="14" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>
-  <rect x="6" y="20" width="44" height="22" rx="3" fill="#1a4fa0"/>
-  <rect x="14" y="34" width="28" height="20" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>
-  <circle cx="42" cy="27" r="2.2" fill="#7fffb0"/>
-  <rect x="12" y="25" width="12" height="3" rx="1.5" fill="#fff"/>
-</svg>'''
-
-def pick_color(jimyeong, sangho):
+def pick_img(jimyeong, sangho):
     s = jimyeong + sangho
     h = sum(ord(c) for c in s)
-    return THUMB_COLOR_POOL[h % len(THUMB_COLOR_POOL)]
+    return PRINTER_IMG_POOL[h % len(PRINTER_IMG_POOL)]
 
 # 임의 좌표/주소 생성용 기본값 (지역명 기반 안내 문구만 사용, 정밀주소는 추정값 표기)
 def make_card(d, region):
     consult_url = get_consult_url(d['sangho'])
     phone = PHONE_MAP.get(consult_url, '1600-3165')
-    bg_color = pick_color(d['jimyeong'], d['sangho'])
+    img_url = pick_img(d['jimyeong'], d['sangho'])
     return f'''  <div class="card">
-    <div class="card-thumb" style="background:{bg_color}; padding:18px;">{PRINTER_ICON_SVG}</div>
+    <div class="card-thumb"><img src="{img_url}" alt="{d['sangho']}" /></div>
     <div class="card-body">
       <div class="card-name">{d['sangho']} - {d['jimyeong']}</div>
       <span class="card-badge">복합기렌탈</span>

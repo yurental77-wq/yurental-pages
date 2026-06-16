@@ -92,29 +92,34 @@ function getConsultUrl(sangho) {
   return DEFAULT_CONSULT_URL;
 }
 
-const THUMB_COLOR_POOL = ['#dce8ff', '#ffe8d6', '#e3f6e0', '#fde8ee', '#e6e0fb', '#fff3c4', '#dff7f4', '#ffe0e0'];
+const PRINTER_IMG_POOL = [
+  'https://gi.esmplus.com/khon21/광고배너/25_2.png',
+  'https://gi.esmplus.com/khon21/광고배너/24_3.png',
+  'https://gi.esmplus.com/khon21/광고배너/24_2.png',
+  'https://gi.esmplus.com/khon21/광고배너/23_3.png',
+  'https://gi.esmplus.com/khon21/광고배너/41_6.png',
+  'https://gi.esmplus.com/khon21/광고배너/40_4.png',
+  'https://gi.esmplus.com/khon21/광고배너/39_3.png',
+  'https://gi.esmplus.com/khon21/광고배너/38_2.png',
+  'https://gi.esmplus.com/khon21/광고배너/37_3.png',
+  'https://gi.esmplus.com/khon21/광고배너/34_5.png',
+  'https://gi.esmplus.com/khon21/광고배너/27_2.png',
+  'https://gi.esmplus.com/khon21/광고배너/26_5.png',
+];
 
-const PRINTER_ICON_SVG = '<svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
-  '<rect x="10" y="8" width="36" height="14" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>' +
-  '<rect x="6" y="20" width="44" height="22" rx="3" fill="#1a4fa0"/>' +
-  '<rect x="14" y="34" width="28" height="20" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>' +
-  '<circle cx="42" cy="27" r="2.2" fill="#7fffb0"/>' +
-  '<rect x="12" y="25" width="12" height="3" rx="1.5" fill="#fff"/>' +
-  '</svg>';
-
-function pickColor(jimyeong, sangho) {
+function pickImg(jimyeong, sangho) {
   const s = jimyeong + sangho;
   let h = 0;
   for (let i = 0; i < s.length; i++) h += s.charCodeAt(i);
-  return THUMB_COLOR_POOL[h % THUMB_COLOR_POOL.length];
+  return PRINTER_IMG_POOL[h % PRINTER_IMG_POOL.length];
 }
 
 function makeCard(d) {
   const consultUrl = getConsultUrl(d.sangho);
   const phone = PHONE_MAP[consultUrl] || '1600-3165';
-  const bgColor = pickColor(d.jimyeong, d.sangho);
+  const imgUrl = pickImg(d.jimyeong, d.sangho);
   return `  <div class="card">
-    <div class="card-thumb" style="background:${bgColor}; padding:18px;">${PRINTER_ICON_SVG}</div>
+    <div class="card-thumb"><img src="${imgUrl}" alt="${d.sangho}" /></div>
     <div class="card-body">
       <div class="card-name">${d.sangho} - ${d.jimyeong}</div>
       <span class="card-badge">복합기렌탈</span>
