@@ -92,30 +92,29 @@ function getConsultUrl(sangho) {
   return DEFAULT_CONSULT_URL;
 }
 
-const PRINTER_IMG_POOL = [
-  'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=220&q=70',
-  'https://images.unsplash.com/photo-1503694978374-8a2fa686963a?w=220&q=70',
-  'https://images.unsplash.com/photo-1581079289196-67865ea83118?w=220&q=70',
-  'https://images.unsplash.com/photo-1642969164999-979483e21601?w=220&q=70',
-  'https://images.unsplash.com/photo-1510511336377-1a9caa095849?w=220&q=70',
-  'https://images.unsplash.com/photo-1535350356005-fd52b3b524fb?w=220&q=70',
-  'https://images.unsplash.com/photo-1611117775350-ac3950990985?w=220&q=70',
-  'https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?w=220&q=70',
-];
+const THUMB_COLOR_POOL = ['#dce8ff', '#ffe8d6', '#e3f6e0', '#fde8ee', '#e6e0fb', '#fff3c4', '#dff7f4', '#ffe0e0'];
 
-function pickImg(jimyeong, sangho) {
+const PRINTER_ICON_SVG = '<svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
+  '<rect x="10" y="8" width="36" height="14" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>' +
+  '<rect x="6" y="20" width="44" height="22" rx="3" fill="#1a4fa0"/>' +
+  '<rect x="14" y="34" width="28" height="20" rx="2" fill="#fff" stroke="#1a4fa0" stroke-width="2"/>' +
+  '<circle cx="42" cy="27" r="2.2" fill="#7fffb0"/>' +
+  '<rect x="12" y="25" width="12" height="3" rx="1.5" fill="#fff"/>' +
+  '</svg>';
+
+function pickColor(jimyeong, sangho) {
   const s = jimyeong + sangho;
   let h = 0;
   for (let i = 0; i < s.length; i++) h += s.charCodeAt(i);
-  return PRINTER_IMG_POOL[h % PRINTER_IMG_POOL.length];
+  return THUMB_COLOR_POOL[h % THUMB_COLOR_POOL.length];
 }
 
 function makeCard(d) {
   const consultUrl = getConsultUrl(d.sangho);
   const phone = PHONE_MAP[consultUrl] || '1600-3165';
-  const imgUrl = pickImg(d.jimyeong, d.sangho);
+  const bgColor = pickColor(d.jimyeong, d.sangho);
   return `  <div class="card">
-    <div class="card-thumb"><img src="${imgUrl}" alt="${d.sangho}" /></div>
+    <div class="card-thumb" style="background:${bgColor}; padding:18px;">${PRINTER_ICON_SVG}</div>
     <div class="card-body">
       <div class="card-name">${d.sangho} - ${d.jimyeong}</div>
       <span class="card-badge">복합기렌탈</span>
