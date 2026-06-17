@@ -77,8 +77,6 @@
     <div id="logEmpty" style="font-size:0.82rem;color:#aaa;margin-top:4px;">아직 생성 기록이 없습니다.</div>
 
     <h2>⚙️ 페이지 생성</h2>
-    <label>카테고리명 (예: 복합기렌탈, 에어컨렌탈)</label>
-    <input type="text" id="categoryInput" value="복합기렌탈" placeholder="복합기렌탈" />
     <div class="count-row">
       <div>
         <label>이번에 생성할 개수</label>
@@ -194,15 +192,14 @@
     const btn = document.getElementById('genBtn');
     const statusEl = document.getElementById('genStatus');
     const count = parseInt(document.getElementById('countInput').value, 10) || 50;
-    const category = document.getElementById('categoryInput').value.trim() || '복합기렌탈';
     btn.disabled = true;
-    statusEl.textContent = `[${category}] ${count}개 생성 중입니다... (최대 1~2분 정도 걸릴 수 있어요)`;
+    statusEl.textContent = `${count}개 생성 중입니다... (최대 1~2분 정도 걸릴 수 있어요)`;
 
     try {
       const res = await fetch('/.netlify/functions/generate-batch', {
         method: 'POST',
         headers: { 'x-admin-password': adminPw, 'content-type': 'application/json' },
-        body: JSON.stringify({ count, category }),
+        body: JSON.stringify({ count }),
       });
       const data = await res.json();
 

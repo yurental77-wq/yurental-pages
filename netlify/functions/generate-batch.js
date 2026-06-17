@@ -278,13 +278,10 @@ exports.handler = async function (event) {
   }
 
   let requestedCount = DEFAULT_BATCH_SIZE;
-  let productName = '복합기렌탈';
+  const productName = '복합기렌탈';
   try {
     const body = event.body ? JSON.parse(event.body) : {};
     if (body.count) requestedCount = parseInt(body.count, 10);
-    if (body.category && typeof body.category === 'string' && body.category.trim()) {
-      productName = body.category.trim();
-    }
   } catch (e) {
     // 잘못된 body면 기본값 사용
   }
