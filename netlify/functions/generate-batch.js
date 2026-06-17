@@ -183,10 +183,17 @@ function renderTopHub(provinces) {
   return { path: 'pages/index.html', content: html };
 }
 
+function encodeUrl(url) {
+  // 프로토콜+도메인은 그대로, 경로 부분만 각 세그먼트를 인코딩
+  const [base, ...pathParts] = url.split('/');
+  // url이 https://domain/path/... 형태
+  return url.split('/').map((seg, i) => i < 3 ? seg : encodeURIComponent(seg)).join('/');
+}
+
 function renderSitemap(publishedItems) {
-  const urls = publishedItems.map(it => `${SITE_URL}/pages/${it.province}/${it.slug}/`);
+  const urls = publishedItems.map(it => encodeUrl(`${SITE_URL}/pages/${it.province}/${it.slug}/`));
   const provinces = [...new Set(publishedItems.map(it => it.province))];
-  for (const p of provinces) urls.push(`${SITE_URL}/pages/${p}/`);
+  for (const p of provinces) urls.push(encodeUrl(`${SITE_URL}/pages/${p}/`));
   urls.push(`${SITE_URL}/pages/`);
   const body = urls.map(u => `  <url><loc>${u}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;

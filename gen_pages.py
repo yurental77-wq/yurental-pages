@@ -1,4 +1,5 @@
 import csv, io, base64, os, re, random, openpyxl
+from urllib.parse import quote
 
 ROOT = 'C:/Users/pc/Downloads/3333'
 
@@ -263,7 +264,7 @@ for idx, row in enumerate(samples):
     with open(f'{page_dir}/index.html', 'w', encoding='utf-8') as f:
         f.write(page_html)
 
-    sitemap_urls.append(canonical)
+    sitemap_urls.append(f'{SITE_URL}/pages/{quote(province)}/{quote(slug)}/')
     province_links.setdefault(province, []).append({'slug': slug, 'region': region, 'product': product, 'category': category})
 
 # 6. 시/도 허브 페이지 생성 (province별 목록)
@@ -281,7 +282,7 @@ for province, items in province_links.items():
     os.makedirs(hub_dir, exist_ok=True)
     with open(f'{hub_dir}/index.html', 'w', encoding='utf-8') as f:
         f.write(hub_html)
-    sitemap_urls.append(f'{SITE_URL}/pages/{province}/')
+    sitemap_urls.append(f'{SITE_URL}/pages/{quote(province)}/')
     top_links.append(province)
 
 # 7. pages/index.html (시/도 전체 허브)
