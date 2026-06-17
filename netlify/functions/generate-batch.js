@@ -351,9 +351,15 @@ exports.handler = async function (event) {
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
 
+    const logEntry = {
+      date: new Date().toISOString(),
+      added: batchItems.length,
+      total: newPublished.length,
+    };
     const newState = {
       order: state.order,
       nextIndex: state.nextIndex + batchItems.length,
+      log: [...(state.log || []), logEntry],
       published: newPublished,
     };
     filesToCommit.push({ path: PROGRESS_PATH, content: JSON.stringify(newState) });

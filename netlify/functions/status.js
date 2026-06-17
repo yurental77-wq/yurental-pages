@@ -82,6 +82,7 @@ exports.handler = async function (event) {
         percentage: Math.round((totalPublished / totalRows) * 1000) / 10,
         byProvinceTotal,
         byProvincePublished,
+        log: state.log || [],
       }),
     };
   } catch (err) {

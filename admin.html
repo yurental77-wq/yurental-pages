@@ -60,6 +60,13 @@
       <tbody id="provinceTbody"></tbody>
     </table>
 
+    <h2>📋 생성 로그</h2>
+    <table id="logTable" style="display:none;">
+      <thead><tr><th>날짜/시간</th><th>생성 수</th><th>누적 발행</th></tr></thead>
+      <tbody id="logTbody"></tbody>
+    </table>
+    <div id="logEmpty" style="font-size:0.82rem;color:#aaa;margin-top:4px;">아직 생성 기록이 없습니다.</div>
+
     <h2>⚙️ 페이지 생성</h2>
     <div class="count-row">
       <div>
@@ -126,6 +133,24 @@
         tr.innerHTML = `<td>${p}</td><td>${pub}</td><td>${total}</td>`;
         tbody.appendChild(tr);
       });
+    }
+
+    const log = data.log || [];
+    const logTbody = document.getElementById('logTbody');
+    logTbody.innerHTML = '';
+    if (log.length) {
+      document.getElementById('logTable').style.display = 'table';
+      document.getElementById('logEmpty').style.display = 'none';
+      [...log].reverse().forEach(entry => {
+        const d = new Date(entry.date);
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${dateStr}</td><td>+${entry.added}</td><td>${entry.total}</td>`;
+        logTbody.appendChild(tr);
+      });
+    } else {
+      document.getElementById('logTable').style.display = 'none';
+      document.getElementById('logEmpty').style.display = 'block';
     }
   }
 
