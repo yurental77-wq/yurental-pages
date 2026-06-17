@@ -31,6 +31,11 @@
   .count-row { display:flex; gap:10px; align-items:flex-end; }
   .count-row > div:first-child { flex:1; }
   .count-row button { width:auto; padding:10px 18px; margin-bottom:16px; }
+  .reset-bar { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+  .reset-bar button { width:auto; padding:8px 16px; font-size:0.85rem; background:#c0392b; }
+  .reset-bar button:hover:not(:disabled) { opacity:0.85; }
+  .queue-badge { font-size:0.8rem; color:#e67e22; font-weight:600; }
+  table input[type=checkbox] { width:16px; height:16px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -56,9 +61,13 @@
     <button class="refresh" onclick="loadStatus()">🔄 현황 새로고침</button>
 
     <table id="provinceTable" style="display:none;">
-      <thead><tr><th>시/도</th><th>발행</th><th>전체</th></tr></thead>
+      <thead><tr><th><input type="checkbox" id="checkAll" onclick="toggleAll(this)" title="전체 선택" /></th><th>시/도</th><th>발행</th><th>전체</th></tr></thead>
       <tbody id="provinceTbody"></tbody>
     </table>
+    <div class="reset-bar" id="resetBar" style="display:none;">
+      <span class="queue-badge" id="queueBadge"></span>
+      <button onclick="resetSelected()">선택 지역 리셋 &amp; 재생성 대기</button>
+    </div>
 
     <h2>📋 생성 로그</h2>
     <table id="logTable" style="display:none;">
@@ -68,6 +77,8 @@
     <div id="logEmpty" style="font-size:0.82rem;color:#aaa;margin-top:4px;">아직 생성 기록이 없습니다.</div>
 
     <h2>⚙️ 페이지 생성</h2>
+    <label>카테고리명 (예: 복합기렌탈, 에어컨렌탈)</label>
+    <input type="text" id="categoryInput" value="복합기렌탈" placeholder="복합기렌탈" />
     <div class="count-row">
       <div>
         <label>이번에 생성할 개수</label>
@@ -123,17 +134,21 @@
 
     const tbody = document.getElementById('provinceTbody');
     tbody.innerHTML = '';
-    const provinces = Object.keys(data.byProvinceTotal);
+    const provinces = Object.keys(data.byProvinceTotal).sort();
     if (provinces.length) {
       document.getElementById('provinceTable').style.display = 'table';
+      document.getElementById('resetBar').style.display = 'flex';
       provinces.forEach(p => {
         const pub = data.byProvincePublished[p] || 0;
         const total = data.byProvinceTotal[p];
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${p}</td><td>${pub}</td><td>${total}</td>`;
+        tr.innerHTML = `<td><input type="checkbox" class="prov-check" value="${p}" /></td><td>${p}</td><td>${pub}</td><td>${total}</td>`;
         tbody.appendChild(tr);
       });
     }
+    const qc = data.resetQueueCount || 0;
+    document.getElementById('queueBadge').textContent = qc > 0 ? `재생성 대기 중: ${qc}개` : '';
+    document.getElementById('checkAll').checked = false;
 
     const log = data.log || [];
     const logTbody = document.getElementById('logTbody');
@@ -179,14 +194,15 @@
     const btn = document.getElementById('genBtn');
     const statusEl = document.getElementById('genStatus');
     const count = parseInt(document.getElementById('countInput').value, 10) || 50;
+    const category = document.getElementById('categoryInput').value.trim() || '복합기렌탈';
     btn.disabled = true;
-    statusEl.textContent = `${count}개 생성 중입니다... (최대 1~2분 정도 걸릴 수 있어요)`;
+    statusEl.textContent = `[${category}] ${count}개 생성 중입니다... (최대 1~2분 정도 걸릴 수 있어요)`;
 
     try {
       const res = await fetch('/.netlify/functions/generate-batch', {
         method: 'POST',
         headers: { 'x-admin-password': adminPw, 'content-type': 'application/json' },
-        body: JSON.stringify({ count }),
+        body: JSON.stringify({ count, category }),
       });
       const data = await res.json();
 
@@ -213,6 +229,32 @@
       statusEl.textContent = '❌ 네트워크 오류: ' + e.message;
     }
     btn.disabled = false;
+  }
+
+  function toggleAll(cb) {
+    document.querySelectorAll('.prov-check').forEach(c => c.checked = cb.checked);
+  }
+
+  async function resetSelected() {
+    const checked = [...document.querySelectorAll('.prov-check:checked')].map(c => c.value);
+    if (!checked.length) { alert('리셋할 지역을 선택해주세요.'); return; }
+    if (!confirm(`선택한 지역(${checked.join(', ')})을 리셋하고 재생성 대기열에 추가할까요?\n\n※ 기존 발행 기록이 삭제되고, 다음 생성 시 새 카테고리로 덮어쓰기됩니다.`)) return;
+
+    const statusEl = document.getElementById('genStatus');
+    statusEl.textContent = '리셋 처리 중...';
+    try {
+      const res = await fetch('/.netlify/functions/reset-province', {
+        method: 'POST',
+        headers: { 'x-admin-password': adminPw, 'content-type': 'application/json' },
+        body: JSON.stringify({ provinces: checked }),
+      });
+      const data = await res.json();
+      if (data.error) { statusEl.textContent = '❌ ' + data.error; return; }
+      statusEl.textContent = `✅ ${checked.join(', ')} 리셋 완료 — ${data.reset}개 페이지가 재생성 대기열에 추가됐습니다.`;
+      await loadStatus();
+    } catch (e) {
+      statusEl.textContent = '❌ 네트워크 오류: ' + e.message;
+    }
   }
 </script>
 

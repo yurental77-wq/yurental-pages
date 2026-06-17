@@ -120,19 +120,19 @@ function assignImgsForPage(seedStr, count) {
   return Array.from({ length: count }, (_, i) => pool[i % pool.length]);
 }
 
-function makeCard(d, imgUrl) {
+function makeCard(d, imgUrl, productName) {
   const consultUrl = getConsultUrl(d.sangho);
   const phone = PHONE_MAP[consultUrl] || '1600-3165';
   return `  <div class="card">
     <div class="card-thumb"><img src="${imgUrl}" alt="${d.sangho}" /></div>
     <div class="card-body">
       <div class="card-name">${d.sangho} - ${d.jimyeong}</div>
-      <span class="card-badge">복합기렌탈</span>
+      <span class="card-badge">${productName}</span>
       <div class="card-info"><span>📍 서비스 지역</span> ${d.jimyeong} 인근</div>
       <div class="card-info"><span>📞 상담</span> 무료 견적 상담 가능</div>
       <div class="card-links">
-        <a class="map-btn naver" href="https://map.naver.com/v5/search/${d.jimyeong} 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
-        <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+${d.jimyeong}" target="_blank" rel="noopener">구글 지도</a>
+        <a class="map-btn naver" href="https://map.naver.com/v5/search/${d.jimyeong} ${productName}" target="_blank" rel="noopener">네이버 지도</a>
+        <a class="map-btn google" href="https://www.google.com/maps/search/${productName}+${d.jimyeong}" target="_blank" rel="noopener">구글 지도</a>
         <a class="map-btn consult" href="${consultUrl}" target="_blank" rel="noopener">홈페이지</a>
         <a class="map-btn phone" href="tel:${phone}">전화문의</a>
       </div>
@@ -140,18 +140,20 @@ function makeCard(d, imgUrl) {
   </div>`;
 }
 
-function renderPage(item, globalIdx) {
-  const { region, product, category, province, slug, dealers } = item;
+function renderPage(item, globalIdx, productName) {
+  const { region, province, slug, dealers } = item;
+  const product = productName || item.product;
+  const category = `${region} ${product}`;
   const titleTmpl = TITLE_TEMPLATES[globalIdx % TITLE_TEMPLATES.length];
   const subtitleTmpl = SUBTITLE_TEMPLATES[globalIdx % SUBTITLE_TEMPLATES.length];
   const title = fmt(titleTmpl, { category, region, product });
   const subtitle = fmt(subtitleTmpl, { category, region, product });
   const metaTitle = `${title} | 하나렌탈`;
   const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
-  const keywords = `${category},${product},${region}${product},복합기렌탈,복합기임대,하나렌탈`;
+  const keywords = `${category},${product},${region}${product},${product},렌탈,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
   const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
-  const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
+  const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i], product)).join('\n\n');
   const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
 
   let html = PAGE_TEMPLATE;
@@ -174,8 +176,9 @@ function renderProvinceHub(province, items) {
   return { path: `pages/${province}/index.html`, content: html };
 }
 
-function renderTopHub(provinces) {
-  const links = provinces.map(p => `    <a href="${p}/index.html">${p} 복합기렌탈 지역 목록</a>`).join('\n');
+function renderTopHub(provinces, productName) {
+  const label = productName || '복합기렌탈';
+  const links = provinces.map(p => `    <a href="${p}/index.html">${p} ${label} 지역 목록</a>`).join('\n');
   let html = HUB_TEMPLATE
     .split('{{PROVINCE}}').join('전국')
     .split('{{CANONICAL}}').join(`${SITE_URL}/pages/`)
@@ -275,9 +278,13 @@ exports.handler = async function (event) {
   }
 
   let requestedCount = DEFAULT_BATCH_SIZE;
+  let productName = '복합기렌탈';
   try {
     const body = event.body ? JSON.parse(event.body) : {};
     if (body.count) requestedCount = parseInt(body.count, 10);
+    if (body.category && typeof body.category === 'string' && body.category.trim()) {
+      productName = body.category.trim();
+    }
   } catch (e) {
     // 잘못된 body면 기본값 사용
   }
@@ -288,7 +295,6 @@ exports.handler = async function (event) {
     let state = await readProgress();
 
     if (!state) {
-      // 최초 1회: 우선순위 지역(전라북도)을 먼저 섞어서 배치하고, 나머지를 뒤에 이어붙임
       const PRIORITY_PROVINCES = ['전라북도'];
       const shuffle = (arr) => {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -301,28 +307,42 @@ exports.handler = async function (event) {
       const priorityIdx = allIdx.filter(i => PRIORITY_PROVINCES.includes(DATA[i].province));
       const restIdx = allIdx.filter(i => !PRIORITY_PROVINCES.includes(DATA[i].province));
       const order = shuffle(priorityIdx).concat(shuffle(restIdx));
-      state = { order, nextIndex: 0, published: [] };
+      state = { order, nextIndex: 0, published: [], resetQueue: [] };
     }
 
-    if (state.nextIndex >= state.order.length) {
+    const resetQueue = state.resetQueue || [];
+    const allDone = state.nextIndex >= state.order.length && resetQueue.length === 0;
+    if (allDone) {
       return {
         statusCode: 200,
         body: JSON.stringify({ done: true, message: '전체 페이지가 모두 생성되었습니다.', total: state.order.length, published: state.published.length }),
       };
     }
 
-    const batchIdxs = state.order.slice(state.nextIndex, state.nextIndex + requestedCount);
-    const batchItems = batchIdxs.map(i => DATA[i]);
+    // resetQueue 우선 처리, 없으면 order에서 순서대로
+    let batchItems;
+    let newNextIndex = state.nextIndex;
+    let newResetQueue;
+    if (resetQueue.length > 0) {
+      const toProcess = resetQueue.slice(0, requestedCount);
+      batchItems = toProcess.map(i => DATA[i]);
+      newResetQueue = resetQueue.slice(toProcess.length);
+    } else {
+      const batchIdxs = state.order.slice(state.nextIndex, state.nextIndex + requestedCount);
+      batchItems = batchIdxs.map(i => DATA[i]);
+      newNextIndex = state.nextIndex + batchItems.length;
+      newResetQueue = [];
+    }
 
     const filesToCommit = [];
     batchItems.forEach((item, k) => {
-      const globalIdx = state.nextIndex + k;
-      const { path: p, content } = renderPage(item, globalIdx);
+      const globalIdx = (resetQueue.length > 0 ? state.nextIndex : state.nextIndex) + k;
+      const { path: p, content } = renderPage(item, globalIdx, productName);
       filesToCommit.push({ path: p, content });
     });
 
     const newPublished = state.published.concat(
-      batchItems.map(it => ({ province: it.province, slug: it.slug, category: it.category }))
+      batchItems.map(it => ({ province: it.province, slug: it.slug, category: `${it.region} ${productName}` }))
     );
 
     const provinceGroups = {};
@@ -346,7 +366,7 @@ exports.handler = async function (event) {
       }
     } catch (e) { /* pages/ 없으면 무시 */ }
 
-    const topHub = renderTopHub([...allProvinces].sort());
+    const topHub = renderTopHub([...allProvinces].sort(), productName);
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
@@ -358,7 +378,8 @@ exports.handler = async function (event) {
     };
     const newState = {
       order: state.order,
-      nextIndex: state.nextIndex + batchItems.length,
+      nextIndex: newNextIndex,
+      resetQueue: newResetQueue,
       log: [...(state.log || []), logEntry],
       published: newPublished,
     };
