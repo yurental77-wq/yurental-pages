@@ -379,7 +379,7 @@ exports.handler = async function (event) {
     };
     filesToCommit.push({ path: PROGRESS_PATH, content: JSON.stringify(newState) });
 
-    await commitFiles(filesToCommit, `[skip ci] [자동생성] ${batchItems.length}개 페이지 추가 (총 ${newPublished.length}/${state.order.length})`);
+    await commitFiles(filesToCommit, `[자동생성] ${batchItems.length}개 페이지 추가 (총 ${newPublished.length}/${state.order.length})`);
 
     return {
       statusCode: 200,
