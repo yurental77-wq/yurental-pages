@@ -140,17 +140,15 @@ function makeCard(d, imgUrl, productName) {
   </div>`;
 }
 
-function renderPage(item, globalIdx, productName) {
-  const { region, province, slug, dealers } = item;
-  const product = productName || item.product;
-  const category = `${region} ${product}`;
+function renderPage(item, globalIdx) {
+  const { region, product, category, province, slug, dealers } = item;
   const titleTmpl = TITLE_TEMPLATES[globalIdx % TITLE_TEMPLATES.length];
   const subtitleTmpl = SUBTITLE_TEMPLATES[globalIdx % SUBTITLE_TEMPLATES.length];
   const title = fmt(titleTmpl, { category, region, product });
   const subtitle = fmt(subtitleTmpl, { category, region, product });
   const metaTitle = `${title} | 하나렌탈`;
   const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
-  const keywords = `${category},${product},${region}${product},${product},렌탈,하나렌탈`;
+  const keywords = `${category},${product},${region}${product},복합기렌탈,복합기임대,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
   const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
   const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i], product)).join('\n\n');
@@ -278,7 +276,6 @@ exports.handler = async function (event) {
   }
 
   let requestedCount = DEFAULT_BATCH_SIZE;
-  const productName = '복합기렌탈';
   try {
     const body = event.body ? JSON.parse(event.body) : {};
     if (body.count) requestedCount = parseInt(body.count, 10);
@@ -334,12 +331,12 @@ exports.handler = async function (event) {
     const filesToCommit = [];
     batchItems.forEach((item, k) => {
       const globalIdx = (resetQueue.length > 0 ? state.nextIndex : state.nextIndex) + k;
-      const { path: p, content } = renderPage(item, globalIdx, productName);
+      const { path: p, content } = renderPage(item, globalIdx);
       filesToCommit.push({ path: p, content });
     });
 
     const newPublished = state.published.concat(
-      batchItems.map(it => ({ province: it.province, slug: it.slug, category: `${it.region} ${productName}` }))
+      batchItems.map(it => ({ province: it.province, slug: it.slug, category: it.category }))
     );
 
     const provinceGroups = {};
@@ -363,7 +360,7 @@ exports.handler = async function (event) {
       }
     } catch (e) { /* pages/ 없으면 무시 */ }
 
-    const topHub = renderTopHub([...allProvinces].sort(), productName);
+    const topHub = renderTopHub([...allProvinces].sort());
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
