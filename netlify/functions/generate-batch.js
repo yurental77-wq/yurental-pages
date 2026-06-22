@@ -212,7 +212,7 @@ function renderRSS(publishedItems) {
     <description>전국 복합기렌탈 업체 정보를 지역별로 제공합니다.</description>
     <language>ko</language>
     <lastBuildDate>${now}</lastBuildDate>
-    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
 ${items}
   </channel>
 </rss>
@@ -392,7 +392,7 @@ exports.handler = async function (event) {
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
-    filesToCommit.push({ path: 'feed.xml', content: renderRSS(newPublished) });
+    filesToCommit.push({ path: 'rss.xml', content: renderRSS(newPublished) });
 
     const logEntry = {
       date: new Date().toISOString(),
