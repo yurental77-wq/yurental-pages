@@ -191,6 +191,34 @@ function encodeUrl(url) {
   return url.split('/').map((seg, i) => i < 3 ? seg : encodeURIComponent(seg)).join('/');
 }
 
+function renderRSS(publishedItems) {
+  const now = new Date().toUTCString();
+  const items = publishedItems.slice(-50).reverse().map(it => {
+    const url = encodeUrl(`${SITE_URL}/pages/${it.province}/${it.slug}/`);
+    const title = `${it.category} - ${it.province} ${it.slug} 업체 목록`;
+    return `    <item>
+      <title><![CDATA[${title}]]></title>
+      <link>${url}</link>
+      <guid>${url}</guid>
+      <description><![CDATA[${it.province} ${it.slug} 인근 ${it.category} 업체 위치와 연락처를 한눈에 확인하세요.]]></description>
+      <pubDate>${now}</pubDate>
+    </item>`;
+  }).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>하나렌탈 - 복합기렌탈 지역별 업체 목록</title>
+    <link>${SITE_URL}</link>
+    <description>전국 복합기렌탈 업체 정보를 지역별로 제공합니다.</description>
+    <language>ko</language>
+    <lastBuildDate>${now}</lastBuildDate>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
+${items}
+  </channel>
+</rss>
+`;
+}
+
 function renderSitemap(publishedItems) {
   const urls = publishedItems.map(it => encodeUrl(`${SITE_URL}/pages/${it.province}/${it.slug}/`));
   const provinces = [...new Set(publishedItems.map(it => it.province))];
@@ -364,6 +392,7 @@ exports.handler = async function (event) {
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
     filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
+    filesToCommit.push({ path: 'feed.xml', content: renderRSS(newPublished) });
 
     const logEntry = {
       date: new Date().toISOString(),

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>하나렌탈 - 복합기렌탈 지역별 업체 목록</title>
+    <link>https://hana-yurental.netlify.app</link>
+    <description>전국 복합기렌탈 업체 정보를 지역별로 제공합니다.</description>
+    <language>ko</language>
+    <atom:link href="https://hana-yurental.netlify.app/feed.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
