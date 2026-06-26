@@ -1,7 +1,7 @@
-import os, re, random
+﻿import os, re, random
 
 ROOT = 'C:/Users/pc/Downloads/3333'
-SITE_URL = 'https://hana-yurental.netlify.app'
+SITE_URL = 'https://hanarentalbj.kr'
 
 # 1. pages/index.html 재생성 — 실제 존재하는 province 폴더 전체 반영
 with open(ROOT + '/province_hub_template.html', 'r', encoding='utf-8') as f:

@@ -1,4 +1,4 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 
-Sitemap: https://hana-yurental.netlify.app/sitemap.xml
+Sitemap: https://hanarentalbj.kr/sitemap.xml

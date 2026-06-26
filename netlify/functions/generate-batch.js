@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_BATCH_SIZE = 50;
@@ -9,7 +9,7 @@ const HUB_TEMPLATE = fs.readFileSync(path.join(__dirname, 'templates/province_hu
 
 // 배너는 page_template.html 내 JS가 런타임에 랜덤 렌더링함 (하나렌탈/노란우산렌탈 4종)
 // 이 사이트(지역별 페이지 모음) 자체의 도메인 — 도메인 정해지면 Netlify 환경변수 SITE_URL에 등록
-const SITE_URL = process.env.SITE_URL || 'https://hana-yurental.netlify.app';
+const SITE_URL = process.env.SITE_URL || 'https://hanarentalbj.kr';
 
 const CONSULT_URL_MAP = [['노란우산렌탈', 'https://yurental.com/']];
 const DEFAULT_CONSULT_URL = 'http://hanarental.net/';
