@@ -54,6 +54,35 @@
     .pagination a.active, .pagination a:hover { background:#1a4fa0; color:#fff; border-color:#1a4fa0; }
     .site-footer { background:#222; color:#aaa; text-align:center; font-size:0.8rem; padding:22px 16px; }
     .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    /* 기종 & 요금 */
+    .price-section { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); padding:32px 24px 24px; margin-top:40px; }
+    .price-section__title { font-size:1.3rem; font-weight:800; color:#111; text-align:center; margin-bottom:6px; }
+    .price-section__sub { font-size:0.88rem; color:#777; text-align:center; margin-bottom:22px; }
+    .price-table-wrap { overflow-x:auto; }
+    .price-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .price-table thead tr { background:#1a4fa0; color:#fff; }
+    .price-table thead th { padding:12px 10px; text-align:left; font-weight:700; }
+    .price-table tbody tr { border-bottom:1px solid #eee; }
+    .price-table tbody tr:hover { background:#f7f9ff; }
+    .price-table tbody td { padding:14px 10px; color:#444; vertical-align:middle; }
+    .pt-img { width:44px; height:44px; border-radius:6px; background:#dce8ff; display:flex; align-items:center; justify-content:center; }
+    .pt-img::after { content:'🖨'; font-size:1.4rem; }
+    .pt-tag { display:inline-block; background:#e8f0ff; color:#1a4fa0; font-size:0.7rem; font-weight:600; padding:1px 7px; border-radius:20px; margin-left:4px; vertical-align:middle; }
+    .pt-tag--hi { background:#fff0e0; color:#c05000; }
+    .price-table small { font-size:0.75rem; color:#999; }
+    .pt-price { font-weight:800; color:#1a4fa0; white-space:nowrap; }
+    .price-note { font-size:0.78rem; color:#999; margin-top:14px; }
+    /* 렌탈 절차 */
+    .process-section { background:#1a4fa0; border-radius:12px; padding:36px 24px 32px; margin-top:32px; text-align:center; }
+    .process-section__title { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:6px; }
+    .process-section__sub { font-size:0.88rem; color:rgba(255,255,255,0.75); margin-bottom:28px; }
+    .process-steps { display:flex; justify-content:center; align-items:flex-start; gap:6px; flex-wrap:wrap; }
+    .process-step { background:rgba(255,255,255,0.12); border-radius:10px; padding:18px 14px; width:140px; text-align:center; }
+    .step-num { width:42px; height:42px; background:#fff; color:#1a4fa0; border-radius:50%; font-size:0.95rem; font-weight:800; line-height:42px; margin:0 auto 10px; }
+    .step-title { font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:8px; }
+    .step-desc { font-size:0.75rem; color:rgba(255,255,255,0.8); line-height:1.6; }
+    .process-arrow { color:rgba(255,255,255,0.4); font-size:1.1rem; margin-top:30px; }
+    @media(max-width:700px){ .process-arrow{display:none;} .process-step{width:calc(50% - 6px);} }
     .card-grid .card { margin-bottom:0; }
     @media (max-width:640px) { .card-grid { grid-template-columns:1fr; } }
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.2rem; } }
@@ -95,7 +124,7 @@
       <div class="card-body">
         <div class="card-name">서울 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 서울 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 서울·강남·마포·영등포·구로·서초·종로·성동</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/서울 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+서울" target="_blank" rel="noopener">구글 지도</a>
@@ -109,7 +138,7 @@
       <div class="card-body">
         <div class="card-name">부산 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 부산 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 부산·김해·양산·기장·해운대</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/부산 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+부산" target="_blank" rel="noopener">구글 지도</a>
@@ -123,7 +152,7 @@
       <div class="card-body">
         <div class="card-name">인천 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 인천 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 인천·시흥·안산·군포·의왕·안양·김포</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/인천 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+인천" target="_blank" rel="noopener">구글 지도</a>
@@ -137,7 +166,7 @@
       <div class="card-body">
         <div class="card-name">대구 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 대구 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 대구·경산·칠곡·고령·성주·김천·구미·군위·청도·창녕·밀양</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/대구 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+대구" target="_blank" rel="noopener">구글 지도</a>
@@ -151,7 +180,7 @@
       <div class="card-body">
         <div class="card-name">대전 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 대전 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 대전·세종·공주·금산·계룡·논산</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/대전 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+대전" target="_blank" rel="noopener">구글 지도</a>
@@ -165,7 +194,7 @@
       <div class="card-body">
         <div class="card-name">광주 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 광주 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 광주·나주·담양·곡성·장성·화순·영광·고창·순창</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/광주 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+광주" target="_blank" rel="noopener">구글 지도</a>
@@ -179,7 +208,7 @@
       <div class="card-body">
         <div class="card-name">울산 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 울산 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 울산·울주·양산·경주</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/울산 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+울산" target="_blank" rel="noopener">구글 지도</a>
@@ -193,7 +222,7 @@
       <div class="card-body">
         <div class="card-name">수원 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 수원 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 수원·화성·오산·평택·안성</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/수원 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+수원" target="_blank" rel="noopener">구글 지도</a>
@@ -207,7 +236,7 @@
       <div class="card-body">
         <div class="card-name">성남 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 성남 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 성남·하남·광주·이천·여주·양평</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/성남 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+성남" target="_blank" rel="noopener">구글 지도</a>
@@ -221,7 +250,7 @@
       <div class="card-body">
         <div class="card-name">고양 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 고양 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 고양·일산·파주·김포·강서·은평</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/고양 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+고양" target="_blank" rel="noopener">구글 지도</a>
@@ -235,7 +264,7 @@
       <div class="card-body">
         <div class="card-name">용인 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 용인 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 용인·기흥·수지·이천·안성·처인</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/용인 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+용인" target="_blank" rel="noopener">구글 지도</a>
@@ -249,7 +278,7 @@
       <div class="card-body">
         <div class="card-name">창원 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 창원 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 창원·통영·거제·사천·고성·함양·진주·의령·함안</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/창원 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+창원" target="_blank" rel="noopener">구글 지도</a>
@@ -263,7 +292,7 @@
       <div class="card-body">
         <div class="card-name">청주 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 청주 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 청주·음성·진천·증평·보은·옥천·영동·괴산</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/청주 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+청주" target="_blank" rel="noopener">구글 지도</a>
@@ -277,7 +306,7 @@
       <div class="card-body">
         <div class="card-name">천안 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 천안 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 천안·아산·홍성·예산·당진·서산·태안·보령</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/천안 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+천안" target="_blank" rel="noopener">구글 지도</a>
@@ -291,7 +320,7 @@
       <div class="card-body">
         <div class="card-name">전주 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 전주 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 전주·완주·봉동·남원·임실·진안·장수·무주</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/전주 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+전주" target="_blank" rel="noopener">구글 지도</a>
@@ -305,7 +334,7 @@
       <div class="card-body">
         <div class="card-name">포항 복합기렌탈</div>
         <span class="card-badge">복합기·복사기·프린터 렌탈</span>
-        <div class="card-info"><span>📍 서비스 지역</span> 포항 전역 · 무료 견적 상담</div>
+        <div class="card-info"><span>📍 서비스 지역</span> 포항·경주·영천·영덕·울진</div>
         <div class="card-links">
           <a class="map-btn naver" href="https://map.naver.com/v5/search/포항 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
           <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+포항" target="_blank" rel="noopener">구글 지도</a>
@@ -314,7 +343,157 @@
         </div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-thumb"><img src="https://gi.esmplus.com/khon21/광고배너/40_4.png" alt="익산 복합기렌탈" /></div>
+      <div class="card-body">
+        <div class="card-name">익산 복합기렌탈</div>
+        <span class="card-badge">복합기·복사기·프린터 렌탈</span>
+        <div class="card-info"><span>📍 서비스 지역</span> 익산·김제·정읍·고창·순창</div>
+        <div class="card-links">
+          <a class="map-btn naver" href="https://map.naver.com/v5/search/익산 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
+          <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+익산" target="_blank" rel="noopener">구글 지도</a>
+          <a class="map-btn consult" href="pages/%EC%A0%84%EB%9D%BC%EB%B6%81%EB%8F%84/%EC%9D%B5%EC%82%B0-%EB%B3%B5%ED%95%A9%EA%B8%B0%EB%A0%8C%ED%83%88/index.html">상세 페이지</a>
+          <a class="map-btn phone" href="tel:1600-3165">전화문의</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><img src="https://gi.esmplus.com/khon21/광고배너/39_3.png" alt="군산 복합기렌탈" /></div>
+      <div class="card-body">
+        <div class="card-name">군산 복합기렌탈</div>
+        <span class="card-badge">복합기·복사기·프린터 렌탈</span>
+        <div class="card-info"><span>📍 서비스 지역</span> 군산·부안·김제·옥구·새만금</div>
+        <div class="card-links">
+          <a class="map-btn naver" href="https://map.naver.com/v5/search/군산 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
+          <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+군산" target="_blank" rel="noopener">구글 지도</a>
+          <a class="map-btn consult" href="pages/%EC%A0%84%EB%9D%BC%EB%B6%81%EB%8F%84/%EA%B5%B0%EC%82%B0-%EB%B3%B5%ED%95%A9%EA%B8%B0%EB%A0%8C%ED%83%88/index.html">상세 페이지</a>
+          <a class="map-btn phone" href="tel:1600-3165">전화문의</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><img src="https://gi.esmplus.com/khon21/광고배너/41_6.png" alt="논산 복합기렌탈" /></div>
+      <div class="card-body">
+        <div class="card-name">논산 복합기렌탈</div>
+        <span class="card-badge">복합기·복사기·프린터 렌탈</span>
+        <div class="card-info"><span>📍 서비스 지역</span> 논산·부여·서천·강경·연무</div>
+        <div class="card-links">
+          <a class="map-btn naver" href="https://map.naver.com/v5/search/논산 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
+          <a class="map-btn google" href="https://www.google.com/maps/search/복합기렌탈+논산" target="_blank" rel="noopener">구글 지도</a>
+          <a class="map-btn consult" href="pages/%EC%B6%A9%EC%B2%AD%EB%82%A8%EB%8F%84/%EB%85%BC%EC%82%B0-%EB%B3%B5%ED%95%A9%EA%B8%B0%EB%A0%8C%ED%83%88/index.html">상세 페이지</a>
+          <a class="map-btn phone" href="tel:1600-3165">전화문의</a>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- 기종 & 요금 섹션 -->
+  <section class="price-section">
+    <h2 class="price-section__title">전국 인기 복합기 기종 &amp; 렌탈 요금</h2>
+    <p class="price-section__sub">출력량과 용도에 맞춰 최적 기종을 추천해 드립니다</p>
+    <div class="price-table-wrap">
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th style="width:52px"></th>
+            <th>기종</th>
+            <th>유형</th>
+            <th>출력 속도</th>
+            <th>주요 기능</th>
+            <th>월 렌탈료</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="pt-img pt-img--bw"></div></td>
+            <td><strong>A4 흑백 복합기 <span class="pt-tag">컴팩트</span></strong><br><small>소규모 사무실, 1인 창업, 스타트업</small></td>
+            <td>A4 흑백 레이저</td>
+            <td>분당 30매</td>
+            <td>인쇄·복사·스캔, 양면 인쇄, 유선 네트워크</td>
+            <td class="pt-price">월 20,000원~</td>
+          </tr>
+          <tr>
+            <td><div class="pt-img pt-img--color"></div></td>
+            <td><strong>A4 컬러 복합기 <span class="pt-tag">네트워크</span></strong><br><small>1~5인 사무실, 일반 사무 환경</small></td>
+            <td>A4 컬러 레이저</td>
+            <td>분당 31매</td>
+            <td>인쇄·복사·스캔·팩스, 양면 인쇄, 유무선 네트워크, 대용량 급지</td>
+            <td class="pt-price">월 33,000원~</td>
+          </tr>
+          <tr>
+            <td><div class="pt-img pt-img--ink"></div></td>
+            <td><strong>A4 컬러 복합기</strong><br><small>디자인·마케팅, 컬러 자료 출력이 잦은 곳</small></td>
+            <td>A4 컬러 잉크젯</td>
+            <td>분당 25매</td>
+            <td>컬러 인쇄·복사·스캔, 양면 인쇄, 모바일 프린트</td>
+            <td class="pt-price">월 35,000원~</td>
+          </tr>
+          <tr>
+            <td><div class="pt-img pt-img--a3c"></div></td>
+            <td><strong>A3 컬러 복합기</strong><br><small>중대형 사무실, 인쇄물 품질이 중요한 업종</small></td>
+            <td>A3 컬러 레이저</td>
+            <td>분당 22매</td>
+            <td>A3 컬러 출력, 고속 스캔, 대용량 급지, 보안 인쇄</td>
+            <td class="pt-price">월 45,000원~</td>
+          </tr>
+          <tr>
+            <td><div class="pt-img pt-img--a3bw"></div></td>
+            <td><strong>A3 흑백 복합기</strong><br><small>도면·서류 출력이 많은 사무실, 설계·법무</small></td>
+            <td>A3 흑백 레이저</td>
+            <td>분당 25매</td>
+            <td>A3 출력, 인쇄·복사·스캔·팩스, 자동 원고 이송(DADF), 대용량 토너</td>
+            <td class="pt-price">월 50,000원~</td>
+          </tr>
+          <tr>
+            <td><div class="pt-img pt-img--a3hi"></div></td>
+            <td><strong>A3 컬러 복합기 <span class="pt-tag pt-tag--hi">고속·대용량</span></strong><br><small>대규모 사업장, 학교·병원·관공서</small></td>
+            <td>A3 컬러 레이저</td>
+            <td>분당 30매</td>
+            <td>대량 출력, 고속 스캔, 대용량 급지, 원격 모니터링</td>
+            <td class="pt-price">월 100,000원~</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="price-note">※ 요금은 약정·출력량에 따라 달라질 수 있으며 정확한 견적은 상담 시 안내됩니다.</p>
+  </section>
+
+  <!-- 렌탈 진행 절차 섹션 -->
+  <section class="process-section">
+    <h2 class="process-section__title">렌탈 진행 절차</h2>
+    <p class="process-section__sub">상담 한 번이면 설치까지 빠르게</p>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title">상담 신청</div>
+        <div class="step-desc">전화 또는 카카오톡으로 사용량과 환경을 알려주세요.</div>
+      </div>
+      <div class="process-arrow">▶</div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title">기종 추천</div>
+        <div class="step-desc">출력량·용도에 맞는 최적 기종과 요금제를 제안합니다.</div>
+      </div>
+      <div class="process-arrow">▶</div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title">방문 설치</div>
+        <div class="step-desc">당일/익일 방문으로 설치와 네트워크 세팅, 사용 교육을 진행합니다.</div>
+      </div>
+      <div class="process-arrow">▶</div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title">사용 시작</div>
+        <div class="step-desc">토너 자동배송과 24시간 이내 A/S로 걱정 없이 사용하세요.</div>
+      </div>
+      <div class="process-arrow">▶</div>
+      <div class="process-step">
+        <div class="step-num">05</div>
+        <div class="step-title">사후 관리</div>
+        <div class="step-desc">정기 점검과 원격 모니터링으로 항상 최상의 상태를 유지합니다.</div>
+      </div>
+    </div>
+  </section>
 
   <div class="banner-wrap" id="banner-bottom"></div>
 
