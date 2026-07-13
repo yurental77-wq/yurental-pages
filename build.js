@@ -144,6 +144,61 @@ function makeCard(d, imgUrl) {
   </div>`;
 }
 
+const INFO_TEMPLATES = [
+  {
+    title: '렌탈 vs 구매, 어떤 게 유리할까요?',
+    body: '{region} 사무실에서 복합기를 도입할 때 가장 먼저 고민하는 것이 렌탈과 구매 중 어떤 방식이 유리한가입니다. 복합기를 구매하면 초기 비용 200만~400만 원이 발생하고, 이후 토너·드럼 등 소모품 비용과 고장 수리비를 모두 자체 부담해야 합니다. 반면 렌탈은 월 3만~8만 원 수준으로 토너·소모품 무상 제공과 무상 AS까지 포함되어 있어 중소기업·소규모 사무실에 특히 유리합니다. 계약 기간은 보통 36개월(3년)이 표준이며, 만료 후 최신 기종으로 교체도 가능합니다. 초기 투자 없이 최신 복합기를 사용하고 싶은 {region} 사무실이라면 렌탈이 합리적인 선택입니다.',
+    tip: '월 인쇄량이 2,000매 이상이라면 렌탈이 구매보다 경제적일 가능성이 높습니다. 소모품 비용까지 합산해 비교해 보세요.',
+  },
+  {
+    title: '토너·소모품 무상 제공, 꼭 확인하세요',
+    body: '{region} 복합기렌탈 이용 시 가장 큰 장점 중 하나는 토너와 소모품 비용 절감입니다. 대부분의 렌탈 계약에는 토너 무상 제공이 포함되어 있으며, 드럼·롤러 등 소모성 부품 교체도 무상으로 처리됩니다. 출력량에 따라 월정액에 토너를 포함하거나 장당 과금 방식으로 계약하는 경우도 있으니 계약 전 반드시 확인하세요. 토너 부족 시 연락하면 보통 당일~익일 무상 발송 또는 기사 방문 교체가 이루어집니다. {region} 지역 업체에 문의할 때 기본 제공 매수와 초과 시 단가도 함께 확인하면 실제 비용을 정확히 파악할 수 있습니다.',
+    tip: '기본 매수 초과 시 장당 추가 요금이 발생하는지 계약서에서 꼭 확인하세요. 이월 가능 여부도 확인하면 좋습니다.',
+  },
+  {
+    title: '컬러 vs 흑백, 업무에 맞게 선택하는 법',
+    body: '{region} 복합기렌탈 선택 시 컬러와 흑백 중 어떤 기종이 적합한지가 가장 중요한 결정 중 하나입니다. 흑백 복합기는 월 2만~4만 원대로 경제적이며, 계약서·공문서 등 문서 출력이 주업무인 사무실에 적합합니다. 컬러 복합기는 월 4만~8만 원 수준이지만 발표 자료, 홍보물, 카탈로그 출력에 유리합니다. A4 모델은 일반 사무용으로 충분하며, A3 모델은 설계 도면이나 대형 자료 출력이 필요한 업종에 권장됩니다. {region} 지역 업체 상담 시 월 예상 출력량과 컬러 사용 비율을 알려주면 최적의 모델을 추천받을 수 있습니다.',
+    tip: '컬러 출력 비중이 전체의 20% 미만이라면 흑백 복합기와 컬러 프린터를 별도 운용하는 것이 더 저렴할 수 있습니다.',
+  },
+  {
+    title: '계약 절차와 설치까지 얼마나 걸릴까요?',
+    body: '{region} 복합기렌탈 계약은 ① 모델 및 조건 상담 → ② 견적 수령 → ③ 계약서 작성 → ④ 기기 설치 및 네트워크 연결 순서로 진행됩니다. 상담 후 보통 2~5일 이내 설치가 가능하며, {region} 인근 업체는 거리가 가까워 더 빠르게 진행되는 경우가 많습니다. 계약 기간은 36개월이 가장 일반적이고, 48·60개월 장기 계약 시 월 렌탈료를 낮출 수 있습니다. 중도 해지 시 위약금이 발생할 수 있으므로 계약 조건을 꼼꼼히 검토하세요. 설치 시 유·무선 네트워크 연결과 드라이버 설정까지 기사가 직접 도와주는 경우가 대부분입니다.',
+    tip: '폐업·사업장 이전 등 불가피한 사유가 있으면 위약금 없이 해지 가능한 경우도 있으니 계약서 특약 조항을 확인하세요.',
+  },
+  {
+    title: '업종별 복합기렌탈 추천 가이드',
+    body: '{region} 지역에서 업종에 맞는 복합기렌탈을 선택하면 비용을 크게 절감할 수 있습니다. 병원·의원은 분당 40매 이상 A4 흑백 고속 모델이 적합합니다. 부동산·보험사무소는 컬러 A4 복합기가 일반적이며, 월 렌탈료 5만 원대 이내로 해결됩니다. 학원·교습소는 A3 흑백 모델로 학습지 출력 비용을 절감할 수 있습니다. 건설·설계사무소는 A3 컬러 복합기가 필수입니다. 소규모 창업 사무실은 A4 컬러 복합기 36개월 약정으로 시작하면 관리 부담 없이 운용할 수 있습니다. {region} 업체에 업종을 알려주면 맞춤 기종을 추천받을 수 있습니다.',
+    tip: '인쇄량이 많은 업종일수록 장당 과금 방식보다 무제한·정액 방식이 유리합니다. 사용 패턴을 먼저 파악하세요.',
+  },
+  {
+    title: 'AS·유지보수, 복합기렌탈의 핵심 장점',
+    body: '{region} 복합기렌탈의 가장 큰 강점은 유지보수 걱정 없이 사용할 수 있다는 점입니다. 렌탈 계약에는 정기 점검과 고장 시 무상 출장 AS가 포함됩니다. 일반적으로 고장 접수 후 당일 또는 다음 영업일 내 기사가 방문하며, 부품 교체도 무상으로 진행됩니다. 수리 불가 시에는 동급 기종으로 무상 교체해 줍니다. {region} 지역 업체를 선택할 때는 AS 응대 시간과 서비스 커버 지역을 반드시 확인하세요. 일부 도서산간 지역은 출장비가 추가될 수 있으므로 사전 상담 시 확인하는 것이 좋습니다.',
+    tip: '당일 AS가 가능한지 먼저 확인하세요. 업무 중 기기 다운 시 대체 기기 제공 여부도 중요한 선택 기준입니다.',
+  },
+  {
+    title: '{region} 복합기렌탈 월 비용 가이드',
+    body: '{region} 복합기렌탈 월 비용은 기종·계약 기간·출력량에 따라 달라집니다. 36개월 약정 기준 A4 흑백 복합기는 월 2만~4만 원, A4 컬러 복합기는 월 4만~7만 원, A3 흑백 복합기는 월 5만~10만 원, A3 컬러 복합기는 월 6만~15만 원 수준입니다. 토너 포함 여부와 기본 제공 매수, 초과 시 장당 단가를 함께 비교해야 실제 비용을 정확히 파악할 수 있습니다. {region} 지역 업체에 월 예상 출력량·용지 크기·컬러 사용 비율을 미리 알려주면 정확한 맞춤 견적을 받을 수 있으며, 견적 상담은 무료입니다.',
+    tip: '장기 계약(48·60개월)은 월 렌탈료가 낮아지지만 중도 해지 위약금 부담이 커질 수 있으니 업무 지속 가능성을 고려하세요.',
+  },
+  {
+    title: '많이 사용되는 복합기 모델 안내',
+    body: '{region} 복합기렌탈에서 인기 있는 모델로는 리코 IM 시리즈, 캐논 iR 시리즈, 후지필름 SC 시리즈 등이 있습니다. 리코 IM C2010은 A3 컬러 지원으로 중소기업에 인기가 많으며, 캐논 iR C3322는 안정성이 높아 병원·관공서에서 많이 사용됩니다. 흑백 출력 위주라면 리코 IM 2500, 캐논 iR 2625가 대표적인 선택입니다. 브라더 MFC-L8900CDW는 소규모 사무실에 적합한 컬러 레이저 복합기로 가성비가 우수합니다. {region} 지역 업체에서 현재 재고 모델과 프로모션 혜택을 확인하면 더 저렴하게 이용할 수 있습니다.',
+    tip: '모델 선택 시 분당 출력 속도(ppm)와 용지 용량을 확인하세요. 인쇄량이 많을수록 분당 30매 이상의 고속 모델이 유리합니다.',
+  },
+];
+
+function getInfoContent(region, globalIdx) {
+  const t = INFO_TEMPLATES[globalIdx % INFO_TEMPLATES.length];
+  const title = t.title.replace(/\{region\}/g, region);
+  const body = t.body.replace(/\{region\}/g, region);
+  const tip = t.tip.replace(/\{region\}/g, region);
+  return `  <div class="info-section">
+    <h3>📌 ${title}</h3>
+    <p>${body}</p>
+    <div class="info-tip">${tip}</div>
+  </div>`;
+}
+
 function renderPage(item, globalIdx) {
   const { region, province, slug, dealers } = item;
   const product = item.product;
@@ -159,13 +214,14 @@ function renderPage(item, globalIdx) {
   const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
   const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
   const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
+  const infoHtml = getInfoContent(region, globalIdx);
 
   let html = PAGE_TEMPLATE;
   const reps = {
     '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{META_TITLE}}': metaTitle,
     '{{META_DESC}}': metaDesc, '{{KEYWORDS}}': keywords, '{{CANONICAL}}': canonical,
     '{{REGION}}': region, '{{PRODUCT}}': product, '{{PROVINCE}}': province,
-    '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml,
+    '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml, '{{INFO_CONTENT}}': infoHtml,
   };
   for (const [k, v] of Object.entries(reps)) html = html.split(k).join(v);
   return { filePath: path.join(ROOT, 'pages', province, slug, 'index.html'), content: html };
