@@ -106,6 +106,11 @@ const FAQ_CLOSERS = [
   '',
 ];
 
+// HTML 태그 제거 후 순수 텍스트 (JSON-LD acceptedAnswer용)
+function stripHtml(s) {
+  return s.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+
 function sampleFAQ(region, product, seedStr) {
   const rnd = seededRandom(seedStr);
   const pool = FAQ_POOL.slice();
@@ -117,12 +122,54 @@ function sampleFAQ(region, product, seedStr) {
   // 개수도 4~6개로 페이지마다 변동
   const count = 4 + Math.floor(rnd() * 3);
   const picked = pool.slice(0, count);
-  return picked.map(([q, a]) => {
-    const qq = fmt(q, { region, product });
+  const items = picked.map(([q, a]) => {
     const closer = FAQ_CLOSERS[Math.floor(rnd() * FAQ_CLOSERS.length)];
-    const aa = fmt(a + closer, { region, product });
-    return `    <div class="faq-item">\n      <div class="faq-q">${qq}</div>\n      <div class="faq-a">${aa}</div>\n    </div>`;
-  }).join('\n\n');
+    return { q: fmt(q, { region, product }), a: fmt(a + closer, { region, product }) };
+  });
+  const html = items.map(({ q, a }) =>
+    `    <div class="faq-item">\n      <div class="faq-q">${q}</div>\n      <div class="faq-a">${a}</div>\n    </div>`
+  ).join('\n\n');
+  return { html, items };
+}
+
+// 구조화 데이터(JSON-LD): FAQPage + BreadcrumbList + Service/LocalBusiness
+function buildJsonLd({ region, province, product, canonical, metaDesc, faqItems }) {
+  const faqPage = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: stripHtml(q),
+      acceptedAnswer: { '@type': 'Answer', text: stripHtml(a) },
+    })),
+  };
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '전국 복합기렌탈', item: `${SITE_URL}/pages/` },
+      { '@type': 'ListItem', position: 2, name: `${province} 지역 목록`, item: encodeUrl(`${SITE_URL}/pages/${province}/`) },
+      { '@type': 'ListItem', position: 3, name: `${region} ${product}`, item: encodeUrl(canonical) },
+    ],
+  };
+  const service = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: product,
+    name: `${region} ${product}`,
+    description: metaDesc,
+    areaServed: { '@type': 'City', name: region },
+    provider: {
+      '@type': 'LocalBusiness',
+      name: '하나렌탈',
+      telephone: '1600-3165',
+      url: 'http://hanarental.net/',
+      areaServed: region,
+    },
+  };
+  return [faqPage, breadcrumb, service]
+    .map(obj => `<script type="application/ld+json">\n${JSON.stringify(obj)}\n</script>`)
+    .join('\n');
 }
 
 function getConsultUrl(sangho) {
@@ -242,8 +289,10 @@ function renderPage(item, globalIdx) {
   }
   const imgs = assignImgsForPage(`${region}-${product}`, uniqueDealers.length);
   const cardsHtml = uniqueDealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
-  const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
+  const faq = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
+  const faqHtml = faq.html;
   const infoHtml = getInfoContent(region, globalIdx);
+  const jsonLd = buildJsonLd({ region, province, product, canonical, metaDesc, faqItems: faq.items });
 
   let html = PAGE_TEMPLATE;
   const reps = {
@@ -251,6 +300,7 @@ function renderPage(item, globalIdx) {
     '{{META_DESC}}': metaDesc, '{{KEYWORDS}}': keywords, '{{CANONICAL}}': canonical,
     '{{REGION}}': region, '{{PRODUCT}}': product, '{{PROVINCE}}': province,
     '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml, '{{INFO_CONTENT}}': infoHtml,
+    '{{JSONLD}}': jsonLd,
   };
   for (const [k, v] of Object.entries(reps)) html = html.split(k).join(v);
   return { filePath: path.join(ROOT, 'pages', province, slug, 'index.html'), content: html };
