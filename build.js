@@ -216,12 +216,12 @@ function renderPage(item, globalIdx) {
   const SYN = ['복합기렌탈','복합기임대','복합기대여','복사기렌탈','복사기임대','복사기대여','프린터렌탈','프린터임대','프린터대여'];
   const keywords = SYN.map(s => `${region}${s}`).join(',') + `,${region} 복합기렌탈,복합기렌탈,복사기임대,프린터대여,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
-  // 같은 업체가 '옥천'/'옥천군'처럼 시·군·구 접미사만 달라 중복되는 카드 제거 + 표시 지역명 통일
-  const stripSuffix = s => s.replace(/(특별자치시|특별자치도|특별시|광역시)$/, '').replace(/(시|군|구)$/, '');
+  // 표시 지역명을 페이지 지역명으로 통일하므로, 같은 업체명(sangho)은 페이지당 1개만 노출
+  // (예: '포항 북구'·'포항 남구'·'포항시'가 모두 '포항'으로 통일돼 중복 카드로 보이는 문제 해결)
   const seen = new Set();
   const uniqueDealers = [];
   for (const d of dealers) {
-    const key = `${d.sangho}|${stripSuffix(d.jimyeong)}`;
+    const key = d.sangho.trim();
     if (seen.has(key)) continue;
     seen.add(key);
     uniqueDealers.push({ ...d, jimyeong: region });
