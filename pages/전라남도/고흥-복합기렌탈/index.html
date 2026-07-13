@@ -75,8 +75,9 @@
     .price-table tbody tr { border-bottom:1px solid #eee; }
     .price-table tbody tr:hover { background:#f7f9ff; }
     .price-table tbody td { padding:14px 10px; color:#444; vertical-align:middle; }
-    .pt-img { width:110px; height:90px; border-radius:6px; background:#f0f4ff; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-    .pt-img img { width:110px; height:90px; object-fit:contain; }
+    .pt-img { width:110px; height:90px; border-radius:6px; background:#f0f4ff; display:flex; align-items:center; justify-content:center; overflow:visible; cursor:zoom-in; position:relative; z-index:1; }
+    .pt-img img { width:110px; height:90px; object-fit:contain; display:block; transition:transform .25s ease; transform-origin:left center; }
+    .pt-img:hover img { transform:scale(2.8); z-index:10; }
     .pt-tag { display:inline-block; background:#e8f0ff; color:#1a4fa0; font-size:0.7rem; font-weight:600; padding:1px 7px; border-radius:20px; margin-left:4px; vertical-align:middle; }
     .pt-tag--hi { background:#fff0e0; color:#c05000; }
     .price-table small { font-size:0.75rem; color:#999; }
