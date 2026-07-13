@@ -17,7 +17,32 @@ const ALL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'netlify/functions/d
 // 나머지 8개 카테고리는 _redirects로 301 리다이렉트 처리한다.
 const TARGET_PRODUCT = '복합기렌탈';
 const DATA = ALL_DATA.filter(r => r.product === TARGET_PRODUCT);
+// 지역동의어/핫지역 맵 (구글 시트 → scripts/update_synonyms.js 로 생성)
+const SYN_MAP = (() => {
+  try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'netlify/functions/data/region_synonyms.json'), 'utf8')); }
+  catch { return {}; }
+})();
 const PAGE_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/page_template.html'), 'utf8');
+
+// 지역명으로 동의어 항목 찾기 (정확 → 접미사제거 → 첫 토큰 순으로 매칭)
+function resolveSyn(region) {
+  if (SYN_MAP[region]) return SYN_MAP[region];
+  const noSuffix = region.replace(/(시|군|구)$/, '');
+  if (SYN_MAP[noSuffix]) return SYN_MAP[noSuffix];
+  const first = region.split(' ')[0];
+  if (SYN_MAP[first]) return SYN_MAP[first];
+  const firstNoSuffix = first.replace(/(시|군|구)$/, '');
+  if (SYN_MAP[firstNoSuffix]) return SYN_MAP[firstNoSuffix];
+  return null;
+}
+
+// 카드 '서비스 지역' 문구 생성 — 동의어 + 핫지역 최대 5개
+function buildServiceArea(region) {
+  const s = resolveSyn(region);
+  if (!s) return `${region} 인근`;
+  const extra = [...(s.syn || []), ...(s.hot || []).slice(0, 5)];
+  return extra.length ? `${region} 전역 · ${extra.join('·')} 인근` : `${region} 인근`;
+}
 const HUB_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/province_hub_template.html'), 'utf8');
 
 const CONSULT_URL_MAP = [['노란우산렌탈', 'https://yurental.com/']];
@@ -189,15 +214,16 @@ function assignImgsForPage(seedStr, count) {
   return Array.from({ length: count }, (_, i) => pool[i % pool.length]);
 }
 
-function makeCard(d, imgUrl) {
+function makeCard(d, imgUrl, serviceArea) {
   const consultUrl = getConsultUrl(d.sangho);
   const phone = PHONE_MAP[consultUrl] || '1600-3165';
+  const areaText = serviceArea || `${d.jimyeong} 인근`;
   return `  <div class="card">
     <div class="card-thumb"><img src="${imgUrl}" alt="${d.sangho}" /></div>
     <div class="card-body">
       <div class="card-name">${d.sangho} - ${d.jimyeong}</div>
       <span class="card-badge">복합기렌탈</span>
-      <div class="card-info"><span>📍 서비스 지역</span> ${d.jimyeong} 인근</div>
+      <div class="card-info"><span>📍 서비스 지역</span> ${areaText}</div>
       <div class="card-info"><span>📞 상담</span> 무료 견적 상담 가능</div>
       <div class="card-links">
         <a class="map-btn naver" href="https://map.naver.com/v5/search/${d.jimyeong} 복합기렌탈" target="_blank" rel="noopener">네이버 지도</a>
@@ -288,7 +314,8 @@ function renderPage(item, globalIdx) {
     uniqueDealers.push({ ...d, jimyeong: region });
   }
   const imgs = assignImgsForPage(`${region}-${product}`, uniqueDealers.length);
-  const cardsHtml = uniqueDealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
+  const serviceArea = buildServiceArea(region);
+  const cardsHtml = uniqueDealers.map((d, i) => makeCard(d, imgs[i], serviceArea)).join('\n\n');
   const faq = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
   const faqHtml = faq.html;
   const infoHtml = getInfoContent(region, globalIdx);
