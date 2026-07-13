@@ -96,17 +96,31 @@ function seededRandom(seedStr) {
   };
 }
 
+// 답변 끝에 페이지별로 덧붙일 지역 맞춤 마무리 문장 (중복 콘텐츠 방지용)
+const FAQ_CLOSERS = [
+  '<br><br>👉 <strong>{region}</strong> 인근 업체는 위 지도·연락처로 바로 확인하실 수 있습니다.',
+  '<br><br>👉 {region} 지역 상담은 무료이니 부담 없이 문의해 보세요.',
+  '<br><br>👉 정확한 조건은 {region} 담당 업체와 통화 시 안내받을 수 있습니다.',
+  '<br><br>👉 {region}에서의 설치 일정은 재고 상황에 따라 달라질 수 있습니다.',
+  '<br><br>👉 위 업체 목록에서 {region} 인근 곳을 비교해 선택하시면 됩니다.',
+  '',
+];
+
 function sampleFAQ(region, product, seedStr) {
   const rnd = seededRandom(seedStr);
   const pool = FAQ_POOL.slice();
-  for (let i = pool.length - 1; i > pool.length - 6; i--) {
+  // 전체 Fisher-Yates 셔플 — 페이지마다 질문 조합이 확실히 달라지도록
+  for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(rnd() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-  const picked = pool.slice(pool.length - 5);
+  // 개수도 4~6개로 페이지마다 변동
+  const count = 4 + Math.floor(rnd() * 3);
+  const picked = pool.slice(0, count);
   return picked.map(([q, a]) => {
     const qq = fmt(q, { region, product });
-    const aa = fmt(a, { region, product });
+    const closer = FAQ_CLOSERS[Math.floor(rnd() * FAQ_CLOSERS.length)];
+    const aa = fmt(a + closer, { region, product });
     return `    <div class="faq-item">\n      <div class="faq-q">${qq}</div>\n      <div class="faq-a">${aa}</div>\n    </div>`;
   }).join('\n\n');
 }
