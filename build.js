@@ -12,7 +12,11 @@ const path = require('path');
 const ROOT = path.resolve(__dirname);
 const SITE_URL = 'https://hanarentalbj.kr';
 
-const DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'netlify/functions/data/data_rows.json'), 'utf8'));
+const ALL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'netlify/functions/data/data_rows.json'), 'utf8'));
+// SEO: 동의어(복사기/프린터 × 임대/대여) 페이지 분산을 막기 위해 도시당 '복합기렌탈' 대표 1개만 생성.
+// 나머지 8개 카테고리는 _redirects로 301 리다이렉트 처리한다.
+const TARGET_PRODUCT = '복합기렌탈';
+const DATA = ALL_DATA.filter(r => r.product === TARGET_PRODUCT);
 const PAGE_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/page_template.html'), 'utf8');
 const HUB_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/province_hub_template.html'), 'utf8');
 
@@ -209,7 +213,8 @@ function renderPage(item, globalIdx) {
   const subtitle = fmt(subtitleTmpl, { category, region, product });
   const metaTitle = `${title} | 하나렌탈`;
   const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
-  const keywords = `${category},${product},${region}${product},복합기렌탈,복합기임대,하나렌탈`;
+  const SYN = ['복합기렌탈','복합기임대','복합기대여','복사기렌탈','복사기임대','복사기대여','프린터렌탈','프린터임대','프린터대여'];
+  const keywords = SYN.map(s => `${region}${s}`).join(',') + `,${region} 복합기렌탈,복합기렌탈,복사기임대,프린터대여,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
   const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
   const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
@@ -286,14 +291,35 @@ ${entries}
 `;
 }
 
+// 삭제된 8개 카테고리 → 도시별 대표(복합기렌탈)로 301 리다이렉트
+function renderRedirects(allData, keptData) {
+  const keptByKey = {};
+  keptData.forEach(it => { keptByKey[`${it.province}|${it.region}`] = it; });
+  const lines = [
+    '# 동의어 카테고리 통합 — 8개 → 도시별 복합기렌탈 대표 페이지 (301)',
+  ];
+  allData.forEach(it => {
+    if (it.product === TARGET_PRODUCT) return;
+    const target = keptByKey[`${it.province}|${it.region}`];
+    if (!target) return;
+    const from = `/pages/${it.province}/${it.slug}/*`;
+    const to = `/pages/${target.province}/${target.slug}/`;
+    lines.push(`${from}  ${to}  301`);
+  });
+  return lines.join('\n') + '\n';
+}
+
 function writeFile(filePath, content) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
 // ---- 메인 빌드 ----
-console.log(`총 ${DATA.length}개 페이지 생성 시작...`);
+console.log(`총 ${DATA.length}개 페이지 생성 시작... (전체 ${ALL_DATA.length}개 중 '${TARGET_PRODUCT}' 대표만)`);
 const start = Date.now();
+
+// 기존 stale 디렉토리(삭제된 8개 카테고리 포함) 완전 정리 후 재생성
+fs.rmSync(path.join(ROOT, 'pages'), { recursive: true, force: true });
 
 const provinceGroups = {};
 const allItems = [];
@@ -333,8 +359,13 @@ writeFile(path.join(ROOT, 'sitemap.xml'), renderSitemap(allItems));
 // rss.xml
 writeFile(path.join(ROOT, 'rss.xml'), renderRSS(allItems));
 
+// _redirects (삭제된 8개 카테고리 → 301)
+const redirects = renderRedirects(ALL_DATA, DATA);
+writeFile(path.join(ROOT, '_redirects'), redirects);
+const redirectCount = redirects.split('\n').filter(l => l.includes('301')).length;
+
 const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-console.log(`\n✅ 완료! ${DATA.length}개 페이지 + sitemap.xml + rss.xml (${elapsed}초)`);
+console.log(`\n✅ 완료! ${DATA.length}개 페이지 + sitemap.xml + rss.xml + _redirects(${redirectCount}건) (${elapsed}초)`);
 console.log(`\n다음 단계:`);
 console.log(`  git add -A`);
 console.log(`  git commit -m "[전체생성] 2043개 페이지 빌드"`);
