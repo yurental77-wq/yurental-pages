@@ -116,9 +116,6 @@
       return;
     }
 
-    // 인증 성공 — 같은 브라우저(같은 도메인)에서 메인 페이지의 편집 모드 버튼이 보이게 표시
-    localStorage.setItem('hanarental_admin_session', 'true');
-
     document.getElementById('loginWrap').classList.remove('show');
     document.getElementById('genWrap').classList.add('show');
     loadStatus();

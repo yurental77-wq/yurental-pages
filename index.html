@@ -54,18 +54,6 @@
     .pagination a.active, .pagination a:hover { background:#1a4fa0; color:#fff; border-color:#1a4fa0; }
     .site-footer { background:#222; color:#aaa; text-align:center; font-size:0.8rem; padding:22px 16px; }
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.2rem; } }
-
-    /* 편집 모드 */
-    #edit-toggle-btn { display:none; position:fixed; bottom:24px; right:24px; z-index:9999; background:#1a4fa0; color:#fff; border:none; border-radius:50px; padding:12px 22px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
-    #edit-toggle-btn.admin-visible { display:block; }
-    #edit-toggle-btn.active { background:#e63946; }
-    #save-btn { position:fixed; bottom:24px; right:175px; z-index:9999; background:#2a9d5c; color:#fff; border:none; border-radius:50px; padding:12px 22px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2); display:none; }
-    #edit-guide { display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%); background:#e63946; color:#fff; padding:10px 24px; border-radius:8px; font-size:0.85rem; z-index:9998; white-space:nowrap; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-    .edit-mode [contenteditable="true"] { outline:2px dashed #1a4fa0 !important; border-radius:4px !important; background:#eef5ff !important; cursor:text; min-width:10px; display:inline-block; }
-    .edit-mode .card-name[contenteditable="true"] { outline-color:#e63946 !important; background:#fff0f0 !important; }
-    .edit-mode .card-info[contenteditable="true"] { outline-color:#ff9900 !important; background:#fff8e6 !important; }
-    .edit-mode .faq-q[contenteditable="true"] { outline-color:#9b59b6 !important; background:#f8f0ff !important; }
-    .edit-mode .faq-a[contenteditable="true"] { outline-color:#2a9d5c !important; background:#f0fff6 !important; }
   </style>
 </head>
 <body>
@@ -391,74 +379,6 @@
   renderBanner('banner-top', order[0]);
   renderBanner('banner-bottom', order[1]);
 })();
-</script>
-
-<!-- 편집 모드 -->
-<div id="edit-guide">✏️ 파란 점선 영역을 클릭해서 바로 수정하세요! 수정 후 💾 HTML 저장 버튼을 누르세요.</div>
-<button id="edit-toggle-btn" onclick="toggleEdit()">✏️ 편집 모드</button>
-<button id="save-btn" onclick="saveHTML()">💾 HTML 저장</button>
-
-<script>
-// 관리자 페이지(admin.html)에서 로그인 성공 시 localStorage에 표시를 남기면 편집 모드 버튼이 보임
-(function () {
-  if (localStorage.getItem('hanarental_admin_session') === 'true') {
-    document.getElementById('edit-toggle-btn').classList.add('admin-visible');
-  }
-})();
-
-var editMode = false;
-var targets = ['.card-name','.card-info','.card-badge','.faq-q','.faq-a','.site-header h1','.site-header p','.intro-box','.site-footer p'];
-function toggleEdit() {
-  editMode = !editMode;
-  var btn = document.getElementById('edit-toggle-btn');
-  var sBtn = document.getElementById('save-btn');
-  var guide = document.getElementById('edit-guide');
-  if (editMode) {
-    document.body.classList.add('edit-mode');
-    btn.textContent = '✅ 편집 종료';
-    btn.classList.add('active');
-    sBtn.style.display = 'block';
-    guide.style.display = 'block';
-    targets.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) {
-        el.setAttribute('contenteditable','true');
-      });
-    });
-  } else {
-    document.body.classList.remove('edit-mode');
-    btn.textContent = '✏️ 편집 모드';
-    btn.classList.remove('active');
-    sBtn.style.display = 'none';
-    guide.style.display = 'none';
-    targets.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(el) {
-        el.removeAttribute('contenteditable');
-      });
-    });
-  }
-}
-function saveHTML() {
-  targets.forEach(function(sel) {
-    document.querySelectorAll(sel).forEach(function(el) {
-      el.removeAttribute('contenteditable');
-    });
-  });
-  document.body.classList.remove('edit-mode');
-  document.getElementById('edit-toggle-btn').textContent = '✏️ 편집 모드';
-  document.getElementById('edit-toggle-btn').classList.remove('active');
-  document.getElementById('save-btn').style.display = 'none';
-  document.getElementById('edit-guide').style.display = 'none';
-  editMode = false;
-  var blob = new Blob(['<!DOCTYPE html>' + document.documentElement.outerHTML], {type:'text/html;charset=utf-8'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'index.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
-  alert('저장 완료! 다운로드 폴더의 index.html로 기존 파일을 교체하세요.');
-}
 </script>
 
 <script>
