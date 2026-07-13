@@ -216,8 +216,18 @@ function renderPage(item, globalIdx) {
   const SYN = ['복합기렌탈','복합기임대','복합기대여','복사기렌탈','복사기임대','복사기대여','프린터렌탈','프린터임대','프린터대여'];
   const keywords = SYN.map(s => `${region}${s}`).join(',') + `,${region} 복합기렌탈,복합기렌탈,복사기임대,프린터대여,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
-  const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
-  const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
+  // 같은 업체가 '옥천'/'옥천군'처럼 시·군·구 접미사만 달라 중복되는 카드 제거 + 표시 지역명 통일
+  const stripSuffix = s => s.replace(/(특별자치시|특별자치도|특별시|광역시)$/, '').replace(/(시|군|구)$/, '');
+  const seen = new Set();
+  const uniqueDealers = [];
+  for (const d of dealers) {
+    const key = `${d.sangho}|${stripSuffix(d.jimyeong)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    uniqueDealers.push({ ...d, jimyeong: region });
+  }
+  const imgs = assignImgsForPage(`${region}-${product}`, uniqueDealers.length);
+  const cardsHtml = uniqueDealers.map((d, i) => makeCard(d, imgs[i])).join('\n\n');
   const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
   const infoHtml = getInfoContent(region, globalIdx);
 
