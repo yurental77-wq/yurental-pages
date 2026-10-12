@@ -1,0 +1,99 @@
+/* Router pilot only. The existing copier pages keep assets/site.css unchanged. */
+.router-page .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr) 300px; gap:36px; }
+.router-page .intro-thumbnail { object-fit:contain; background:#f6f9fd; padding:16px; }
+.router-kicker { font-size:.78rem; font-weight:800; color:var(--brand); letter-spacing:.04em; margin-bottom:12px; }
+.router-lead { font-size:1.2rem; line-height:1.6; color:var(--ink); font-weight:900; -webkit-text-stroke:.25px currentColor; margin:6px 0 22px; }
+.router-page .router-intro-description { color:#40536d; font-size:1rem; line-height:1.9; margin:0; }
+.router-page .router-intro-description + .router-intro-description { margin-top:10px; }
+.router-page .intro-copy > .router-small { border-top:1px solid #dce5f2; padding-top:14px; margin-top:20px; font-size:.84rem; color:#53657d; }
+.router-intro-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+.router-page .router-small { font-size:.83rem; line-height:1.85; color:var(--muted); margin-top:16px; }
+.router-page .router-features { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.router-feature { border:1px solid var(--line); background:#f7faff; border-radius:14px; padding:24px; }
+.router-page .router-feature h3 { border:0; margin:0 0 10px; padding:0; font-size:1.04rem; color:var(--ink); }
+.router-page .router-feature p { font-size:.9rem; line-height:1.9; margin:0; }
+.router-plans { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-bottom:24px; }
+.router-plan { display:flex; flex-direction:column; border:1px solid var(--line); border-radius:16px; padding:28px 24px; background:#f8faff; }
+.router-plan:last-child { border-color:#aac3e8; background:#edf4ff; }
+.router-plan h3 { font-size:1.05rem; color:var(--ink); }
+.router-plan .router-plan-price { font-size:2.1rem; line-height:1.5; font-weight:800; color:var(--brand); letter-spacing:-.055em; margin:18px 0 0; }
+.router-plan-price span { font-size:1rem; margin-left:4px; }
+.router-plan small { color:var(--muted); font-size:.8rem; }
+.router-plan p { font-size:.9rem; color:var(--muted); margin:16px 0 24px; }
+.router-plan .map-btn { margin-top:auto; }
+.router-spec-wrap { border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.router-spec-table { width:100%; border-collapse:collapse; font-size:.93rem; }
+.router-spec-table th { width:180px; text-align:left; color:var(--ink); background:#f4f7fc; font-weight:700; }
+.router-spec-table th,.router-spec-table td { padding:18px 22px; border-bottom:1px solid var(--line); vertical-align:top; }
+.router-spec-table tr:last-child th,.router-spec-table tr:last-child td { border-bottom:0; }
+.router-spec-table td { color:var(--muted); }
+.router-checklist { padding-left:24px; color:#42546b; line-height:2; }
+.router-checklist li + li { margin-top:8px; }
+.router-contact { background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow); }
+.router-contact p { color:var(--muted); margin-bottom:8px; }
+.router-contact .router-contact-number { color:var(--brand); font-size:1.5rem; font-weight:800; text-decoration:none; }
+.router-page .process-step { flex:1 0 0; }
+.router-page .router-source { font-size:.82rem; color:var(--muted); line-height:1.9; margin-top:28px; }
+.router-source a { color:var(--brand); }
+/* 기존 파란색 팔레트 안에서 섹션별 시각적 구분을 보강한다. */
+.router-page .intro-box--with-thumbnail { background:linear-gradient(120deg,#fff 65%,#f0f5ff); }
+.router-page .intro-thumbnail { border-radius:20px; box-shadow:0 12px 28px #1a4fa012; }
+.router-kicker { display:inline-block; padding:7px 12px; border:1px solid #d5e3f8; border-radius:999px; background:#edf4ff; }
+.router-page .info-section,.router-page .price-section { background:#fff; }
+.router-page .section-title { position:relative; }
+.router-page .section-title::after { content:""; position:absolute; bottom:-1px; left:0; width:52px; height:3px; border-radius:3px; background:var(--brand); }
+.router-page #router-pricing { background:linear-gradient(180deg,#f3f7ff,#fff 48%); }
+.router-plans { padding-top:4px; }
+.router-plan { position:relative; overflow:hidden; background:#fff; box-shadow:0 6px 18px #1a4fa008; border-top:4px solid #9bb9e7; }
+.router-plan:nth-child(2) { border-top-color:#5781bf; }
+.router-plan:last-child { border-top-color:var(--brand); background:linear-gradient(145deg,#edf4ff,#f8faff); }
+.router-icon { display:flex; align-items:center; justify-content:center; width:46px; height:46px; border:1px solid #dce7f8; border-radius:14px; color:var(--brand); background:#eaf2ff; flex-shrink:0; }
+.router-icon svg { display:block; width:25px; height:25px; }
+.router-plan > .router-icon { margin-bottom:18px; }
+.router-plan .router-plan-price { margin-top:12px; }
+.router-plan .map-btn { box-shadow:0 4px 10px #1a4fa014; }
+.router-feature { position:relative; background:linear-gradient(145deg,#fff,#f5f8fe); }
+.router-feature > .router-icon { margin-bottom:18px; }
+.router-feature:nth-child(2n) .router-icon { background:#edf7f7; border-color:#d6ecea; color:#246a71; }
+.router-feature:nth-child(3n) .router-icon { background:#f0efff; border-color:#e1def7; color:#5d61a0; }
+.router-page .info-tip { border-left:3px solid #7d9ed2; }
+.router-spec-table caption { background:#eaf2ff; color:var(--ink); font-weight:700; border-bottom:1px solid var(--line); }
+.router-spec-table tr:nth-child(even) td { background:#fafcff; }
+.router-checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; padding:0; list-style-position:inside; }
+.router-checklist li { padding:18px 20px; border:1px solid var(--line); border-radius:12px; background:#f6f9ff; line-height:1.85; }
+.router-checklist li::marker { color:var(--brand); font-weight:800; }
+.router-checklist li + li { margin-top:0; }
+.router-checklist li:last-child { grid-column:1 / -1; }
+.router-contact { border-left:4px solid var(--brand); background:linear-gradient(120deg,#fff,#f0f5ff); }
+.router-contact .router-contact-number { display:inline-block; font-size:2rem; letter-spacing:-.04em; padding:4px 0 12px; }
+.router-page .process-step { background:#ffffff14; border-top:3px solid #8fbbff; }
+.router-page .step-num { display:inline-flex; width:42px; height:42px; align-items:center; justify-content:center; border-radius:12px; background:#ffffff18; margin-bottom:14px; }
+.router-page .faq-q { background:linear-gradient(90deg,#f4f8ff,#fff); }
+@media(hover:hover) {
+  .router-feature:hover { border-color:#b4c9e8; box-shadow:0 8px 20px #1a4fa00b; }
+}
+@media(max-width:900px) {
+  .router-page .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr) 230px; gap:24px; }
+  .router-page .router-features { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .router-plans { gap:12px; }
+  .router-plan { padding:24px 18px; }
+  .router-plan .router-plan-price { font-size:1.85rem; }
+  .router-page .process-step { flex:0 0 170px; }
+}
+@media(max-width:600px) {
+  .router-page .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .router-page .router-features,.router-plans { grid-template-columns:minmax(0,1fr); }
+  .router-feature,.router-contact { padding:24px 20px; }
+  .router-lead { font-size:1.1rem; }
+  .router-page .router-intro-description { font-size:.95rem; }
+  .router-plan { padding:24px; }
+  .router-spec-table { font-size:.86rem; }
+  .router-spec-table th { width:105px; }
+  .router-spec-table th,.router-spec-table td { padding:14px 12px; }
+  .router-intro-actions { display:grid; grid-template-columns:minmax(0,1fr); }
+  .router-checklist { grid-template-columns:minmax(0,1fr); }
+  .router-checklist li { padding:16px; }
+  .router-plan > .router-icon { position:absolute; top:20px; right:20px; width:38px; height:38px; margin:0; }
+  .router-plan h3 { padding-right:44px; }
+  .router-kicker { font-size:.7rem; letter-spacing:0; }
+}

@@ -169,6 +169,7 @@ function renderProvinceHub(province, items) {
   const links = items.map(it => `    <a href="${it.slug}/index.html">${it.category}</a>`).join('\n');
   let html = HUB_TEMPLATE
     .split('{{PROVINCE}}').join(province)
+    .split('{{ASSET_PREFIX}}').join('../../')
     .split('{{CANONICAL}}').join(`${SITE_URL}/pages/${province}/`)
     .split('{{LINKS}}').join(links);
   return { path: `pages/${province}/index.html`, content: html };
@@ -179,6 +180,7 @@ function renderTopHub(provinces, productName) {
   const links = provinces.map(p => `    <a href="${p}/index.html">${p} ${label} 지역 목록</a>`).join('\n');
   let html = HUB_TEMPLATE
     .split('{{PROVINCE}}').join('전국')
+    .split('{{ASSET_PREFIX}}').join('../')
     .split('{{CANONICAL}}').join(`${SITE_URL}/pages/`)
     .split('{{LINKS}}').join(links);
   return { path: 'pages/index.html', content: html };

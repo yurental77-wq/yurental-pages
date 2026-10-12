@@ -2,3 +2,5 @@
 Allow: /
 
 Sitemap: https://hanarentalbj.kr/sitemap.xml
+Sitemap: https://hanarentalbj.kr/sitemap-emd.xml
+Sitemap: https://hanarentalbj.kr/sitemap-router.xml

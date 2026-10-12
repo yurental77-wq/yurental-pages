@@ -1,0 +1,27 @@
+{
+  "model": "CNR-5G500",
+  "brand": "CNSLINK",
+  "image": "https://yurental.com/rental/assets/product-showcase/cnr-5g500-white-v1.webp",
+  "sourceUrl": "https://yurental.com/rental/%EB%9D%BC%EC%9A%B0%ED%84%B0%EB%A0%8C%ED%83%88/index.html",
+  "regionalSourceUrl": "https://yurental.com/rental/%EB%9D%BC%EC%9A%B0%ED%84%B0%EB%A0%8C%ED%83%88/%EC%9D%B5%EC%82%B0/index.html",
+  "verifiedDate": "2026-10-12",
+  "phone": "1660-4625",
+  "mobile": "010-7138-6470",
+  "plans": [
+    { "label": "3일 렌탈", "price": 80000, "period": "3일", "use": "단기 행사·교육 일정" },
+    { "label": "15일 렌탈", "price": 100000, "period": "15일", "use": "팝업 운영·임시 업무 공간" },
+    { "label": "월 렌탈", "price": 130000, "period": "1개월", "use": "현장 사무실·지속적인 업무" }
+  ],
+  "specs": [
+    ["제품 유형", "5G·LTE 내장 안테나형 설치 라우터"],
+    ["유선 연결", "기가비트 이더넷 LAN 2포트"],
+    ["무선 연결", "Wi-Fi 5·Wi-Fi 6 / 2.4GHz·5GHz / IEEE 802.11 a/b/g/n/ac/ax"],
+    ["안테나", "5G/LTE 6개 · Wi-Fi 2개"],
+    ["네트워크", "유선·무선 자동 전환 지원"],
+    ["원격 관리", "NMS 상태 확인 및 원격 관리 지원"],
+    ["VPN", "Secuway·Axgate SSL VPN agent 지원 (실제 구성은 별도 상담)"],
+    ["메모리", "Flash Memory 512MB"],
+    ["전원", "12V/2A 어댑터"],
+    ["크기·무게", "148 × 108 × 45mm (가로 × 세로 × 높이) · 약 310g"]
+  ]
+}

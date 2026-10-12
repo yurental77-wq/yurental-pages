@@ -290,19 +290,19 @@ function getInfoContent(region, globalIdx) {
   </div>`;
 }
 
-function renderPage(item, globalIdx) {
+function renderPage(item, globalIdx, options = {}) {
   const { region, province, slug, dealers } = item;
   const product = item.product;
   const category = `${region} ${product}`;
   const titleTmpl = TITLE_TEMPLATES[globalIdx % TITLE_TEMPLATES.length];
   const subtitleTmpl = SUBTITLE_TEMPLATES[globalIdx % SUBTITLE_TEMPLATES.length];
-  const title = fmt(titleTmpl, { category, region, product });
-  const subtitle = fmt(subtitleTmpl, { category, region, product });
+  const title = options.title || fmt(titleTmpl, { category, region, product });
+  const subtitle = options.subtitle || fmt(subtitleTmpl, { category, region, product });
   const metaTitle = `${title} | 하나렌탈`;
-  const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
+  const metaDesc = options.metaDesc || `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
   const SYN = ['복합기렌탈','복합기임대','복합기대여','복사기렌탈','복사기임대','복사기대여','프린터렌탈','프린터임대','프린터대여'];
   const keywords = SYN.map(s => `${region}${s}`).join(',') + `,${region} 복합기렌탈,복합기렌탈,복사기임대,프린터대여,하나렌탈`;
-  const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
+  const canonical = options.canonical || `${SITE_URL}/pages/${province}/${slug}/`;
   // 표시 지역명을 페이지 지역명으로 통일하므로, 같은 업체명(sangho)은 페이지당 1개만 노출
   // (예: '포항 북구'·'포항 남구'·'포항시'가 모두 '포항'으로 통일돼 중복 카드로 보이는 문제 해결)
   const seen = new Set();
@@ -314,12 +314,12 @@ function renderPage(item, globalIdx) {
     uniqueDealers.push({ ...d, jimyeong: region });
   }
   const imgs = assignImgsForPage(`${region}-${product}`, uniqueDealers.length);
-  const serviceArea = buildServiceArea(region);
-  const cardsHtml = uniqueDealers.map((d, i) => makeCard(d, imgs[i], serviceArea)).join('\n\n');
-  const faq = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
+  const serviceArea = options.serviceArea || buildServiceArea(region);
+  const cardsHtml = options.cardsHtml ?? uniqueDealers.map((d, i) => makeCard(d, imgs[i], serviceArea)).join('\n\n');
+  const faq = options.faq || sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
   const faqHtml = faq.html;
-  const infoHtml = getInfoContent(region, globalIdx);
-  const jsonLd = buildJsonLd({ region, province, product, canonical, metaDesc, faqItems: faq.items });
+  const infoHtml = options.infoHtml ?? getInfoContent(region, globalIdx);
+  const jsonLd = options.jsonLd || buildJsonLd({ region, province, product, canonical, metaDesc, faqItems: faq.items });
 
   let html = PAGE_TEMPLATE;
   const reps = {
@@ -330,13 +330,14 @@ function renderPage(item, globalIdx) {
     '{{JSONLD}}': jsonLd,
   };
   for (const [k, v] of Object.entries(reps)) html = html.split(k).join(v);
-  return { filePath: path.join(ROOT, 'pages', province, slug, 'index.html'), content: html };
+  return { filePath: options.filePath || path.join(ROOT, 'pages', province, slug, 'index.html'), content: html };
 }
 
 function renderProvinceHub(province, items) {
   const links = items.map(it => `    <a href="${it.slug}/index.html">${it.category}</a>`).join('\n');
   const html = HUB_TEMPLATE
     .split('{{PROVINCE}}').join(province)
+    .split('{{ASSET_PREFIX}}').join('../../')
     .split('{{CANONICAL}}').join(`${SITE_URL}/pages/${province}/`)
     .split('{{LINKS}}').join(links);
   return { filePath: path.join(ROOT, 'pages', province, 'index.html'), content: html };
@@ -346,6 +347,7 @@ function renderTopHub(provinces) {
   const links = provinces.map(p => `    <a href="${p}/index.html">${p} 복합기렌탈 지역 목록</a>`).join('\n');
   const html = HUB_TEMPLATE
     .split('{{PROVINCE}}').join('전국')
+    .split('{{ASSET_PREFIX}}').join('../')
     .split('{{CANONICAL}}').join(`${SITE_URL}/pages/`)
     .split('{{LINKS}}').join(links);
   return { filePath: path.join(ROOT, 'pages', 'index.html'), content: html };
@@ -415,6 +417,11 @@ function writeFile(filePath, content) {
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
+// 읍면동 빌드도 같은 카드·배너·기종 표와 FAQ 표시 구조를 재사용한다.
+module.exports = { ROOT, SITE_URL, DATA, renderPage, seededRandom, stripHtml, encodeUrl };
+
+// import 시 기존 pages/ 삭제·재생성이 실행되지 않도록 보호한다.
+if (require.main === module) {
 // ---- 메인 빌드 ----
 console.log(`총 ${DATA.length}개 페이지 생성 시작... (전체 ${ALL_DATA.length}개 중 '${TARGET_PRODUCT}' 대표만)`);
 const start = Date.now();
@@ -465,9 +472,18 @@ const redirects = renderRedirects(ALL_DATA, DATA);
 writeFile(path.join(ROOT, '_redirects'), redirects);
 const redirectCount = redirects.split('\n').filter(l => l.includes('301')).length;
 
+// 도시 빌드 후에도 별도 읍면동 목록 연결이 유지된다. 기존 사이트맵/RSS와 분리한다.
+if (fs.existsSync(path.join(ROOT, 'data', 'emd_regions.json'))) {
+  require('./build-emd').buildEmd();
+}
+if (fs.existsSync(path.join(ROOT, 'data', 'router_product.json'))) {
+  require('./build-router').buildRouter();
+}
+
 const elapsed = ((Date.now() - start) / 1000).toFixed(1);
 console.log(`\n✅ 완료! ${DATA.length}개 페이지 + sitemap.xml + rss.xml + _redirects(${redirectCount}건) (${elapsed}초)`);
 console.log(`\n다음 단계:`);
 console.log(`  git add -A`);
-console.log(`  git commit -m "[전체생성] 2043개 페이지 빌드"`);
+console.log(`  git commit -m "[전체생성] 도시·읍면동 페이지 빌드"`);
 console.log(`  git push origin main`);
+}

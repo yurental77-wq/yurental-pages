@@ -88,6 +88,8 @@
     @media (max-width:640px) { .card-grid { grid-template-columns:1fr; } }
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.2rem; } }
   </style>
+  <link rel="stylesheet" href="./assets/site.css?v=20261007" />
+  <script src="./assets/site.js?v=20261007" defer></script>
 </head>
 <body>
 
@@ -114,6 +116,7 @@
     <h2>지역별 복합기렌탈 바로가기</h2>
     <p>
       <a href="pages/index.html" style="color:#1a4fa0; font-weight:700;">전국 시/도별 복합기렌탈 지역 목록 보기 →</a>
+      <br><a href="emd/index.html" style="color:#1a4fa0; font-weight:700;">전국 읍·면·동 복합기렌탈 목록 보기 →</a>
     </p>
   </div>
 
@@ -182,6 +185,14 @@
             <td>분당 30매</td>
             <td>대량 출력, 고속 스캔, 대용량 급지, 원격 모니터링</td>
             <td class="pt-price">월 100,000원~</td>
+          </tr>
+          <tr class="pt-router">
+            <td><div class="pt-img"><img src="https://yurental.com/rental/assets/product-showcase/cnr-5g500-white-v1.webp" alt="CNSLINK CNR-5G500 5G 라우터" loading="lazy" decoding="async"></div></td>
+            <td><strong>5G 라우터 CNR-5G500 <span class="pt-tag">무선공유기</span></strong><br><small>AI 교육·공사현장·임시 사무실</small></td>
+            <td>5G·LTE 라우터</td>
+            <td>해당 없음</td>
+            <td>Wi-Fi 6, 기가비트 LAN 2포트, 유·무선 인터넷 연결</td>
+            <td class="pt-price">월 130,000원<br><small>부가세 별도</small><br><small>3일 80,000원<br>15일 100,000원</small></td>
           </tr>
         </tbody>
       </table>
@@ -499,6 +510,10 @@
 
   <div class="banner-wrap" id="banner-bottom"></div>
 
+<!-- ROUTER-LIST:START -->
+  <section><h2 class="section-title">전국 라우터렌탈 지역 안내</h2><div class="list"><a href="router/index.html">도시 및 읍·면·동별 5G 라우터렌탈 요금·사양 보기</a></div></section>
+<!-- ROUTER-LIST:END -->
+
   <div class="faq-wrap">
     <div class="section-title">❓ FAQ 복합기렌탈 자주 묻는 질문</div>
 
@@ -584,7 +599,7 @@
 (function () {
   var BRANDS = [
     {
-      link: 'http://hanarental.net/',
+      link: 'https://hanarental.shop/',
       imgs: [
         'https://gi.esmplus.com/khon21/광고배너/ha1.png',
         'https://gi.esmplus.com/khon21/광고배너/ha2.png',

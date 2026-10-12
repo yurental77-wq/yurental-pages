@@ -104,6 +104,8 @@
     .crumb a { color:#1a4fa0; text-decoration:none; }
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.1rem; } }
   </style>
+  <link rel="stylesheet" href="../../../assets/site.css?v=20261007" />
+  <script src="../../../assets/site.js?v=20261007" defer></script>
 </head>
 <body>
 
@@ -116,10 +118,13 @@
 
   <div class="crumb"><a href="../../../index.html">전국 복합기렌탈 홈</a> &gt; <a href="../index.html">전라남도 지역 목록</a> &gt; 담양 복합기렌탈</div>
 
-  <div class="intro-box">
+  <div class="intro-box intro-box--with-thumbnail">
+    <div class="intro-copy">
     <strong>복합기렌탈</strong>이란 프린터·스캐너·팩스 기능을 갖춘 복합기를 구매 대신 월 비용으로 이용하는 서비스입니다.<br>
     담양에서는 <strong>복합기렌탈</strong>은 물론 <strong>복사기 임대·대여</strong>, <strong>프린터 렌탈·임대</strong>까지 같은 업체에서 함께 상담할 수 있습니다.<br>
     아래에서 <strong>담양 인근 복합기렌탈 업체</strong>의 위치·연락처·지도를 한눈에 확인하세요.
+    </div>
+    <img class="intro-thumbnail" src="../../../assets/copier-intro.webp" alt="사무실 복합기 렌탈 안내 이미지" width="720" height="720" decoding="async" />
   </div>
 
   <div class="info-section">
@@ -230,6 +235,14 @@
             <td>대량 출력, 고속 스캔, 대용량 급지, 원격 모니터링</td>
             <td class="pt-price">월 100,000원~</td>
           </tr>
+          <tr class="pt-router">
+            <td><div class="pt-img"><img src="https://yurental.com/rental/assets/product-showcase/cnr-5g500-white-v1.webp" alt="CNSLINK CNR-5G500 5G 라우터" loading="lazy" decoding="async"></div></td>
+            <td><strong>5G 라우터 CNR-5G500 <span class="pt-tag">무선공유기</span></strong><br><small>AI 교육·공사현장·임시 사무실</small></td>
+            <td>5G·LTE 라우터</td>
+            <td>해당 없음</td>
+            <td>Wi-Fi 6, 기가비트 LAN 2포트, 유·무선 인터넷 연결</td>
+            <td class="pt-price">월 130,000원<br><small>부가세 별도</small><br><small>3일 80,000원<br>15일 100,000원</small></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -272,6 +285,19 @@
       </div>
     </div>
   </section>
+
+<!-- EMD-LINKS:START -->
+  <section class="emd-related">
+    <h2 class="section-title">읍·면·동별 복합기렌탈 안내</h2>
+    <div class="list">
+      <a href="../../../emd/전남광주통합특별시/담양군/index.html">담양군 읍·면·동 목록</a>
+    </div>
+  </section>
+<!-- EMD-LINKS:END -->
+
+<!-- ROUTER-LINK:START -->
+  <section><h2 class="section-title">담양 5G 라우터렌탈 안내</h2><div class="list"><a href="../../../router/담양/index.html">CNR-5G500 라우터 사양·단기·월 렌탈 요금 보기</a></div></section>
+<!-- ROUTER-LINK:END -->
 
   <div class="faq-wrap">
     <h2 class="section-title">❓ FAQ 복합기렌탈 자주 묻는 질문</h2>
@@ -320,7 +346,7 @@
 (function () {
   var BRANDS = [
     {
-      link: 'http://hanarental.net/',
+      link: 'https://hanarental.shop/',
       imgs: [
         'https://gi.esmplus.com/khon21/광고배너/ha1.png',
         'https://gi.esmplus.com/khon21/광고배너/ha2.png',
