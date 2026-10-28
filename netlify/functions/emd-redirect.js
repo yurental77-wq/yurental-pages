@@ -1,5 +1,6 @@
 'use strict';
 const { routes } = require('./data/emd_url_redirects.json');
+const { isRootRouterLeafPath, isRootCopierLeafPath } = require('./lib/emd-url-paths');
 
 exports.handler = async event => {
   const params = event.queryStringParameters || {};
@@ -21,7 +22,8 @@ exports.handler = async event => {
   if (!Object.hasOwn(routes, from)) return { statusCode: 404, body: 'Not Found' };
   const target = routes[from];
   // 이동 대상은 검증된 사이트 내부 경로로만 제한한다.
-  if (!target.startsWith('/emd/') && !target.startsWith('/router/emd/')) {
+  if (!target.startsWith('/emd/') && !target.startsWith('/router/emd/') &&
+    !isRootRouterLeafPath(target) && !isRootCopierLeafPath(target)) {
     return { statusCode: 500, body: 'Invalid redirect target' };
   }
   const query = new URLSearchParams();

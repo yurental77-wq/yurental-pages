@@ -18,7 +18,7 @@ const stripCrumbs = html => html.replace(/<div class="crumb">[\s\S]*?<\/div>/g, 
 for (const row of rows) {
   for (const product of ['복합기렌탈', '라우터렌탈']) {
     const copier = product === '복합기렌탈';
-    const leaf = copier ? leafPath(row) : '/router' + leafPath(row).replace(/-복합기렌탈\/$/, '-라우터렌탈/');
+    const leaf = leafPath(row, product);
     const district = (copier ? '' : '/router') + districtPath(row);
     const crumbs = emdBreadcrumbs(row, district, leaf, product);
     assert.equal(crumbs.length, 3);

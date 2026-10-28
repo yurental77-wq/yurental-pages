@@ -164,7 +164,7 @@ function relatedLinks(row, siblings, city) {
   const selected = nearby.slice(start, start + 6);
   const links = selected.map(item => `<a href="../${esc(leafPath(item).split('/').slice(-2)[0])}/index.html">${esc(item.name)} 복합기렌탈</a>`);
   if (city) links.unshift(`<a href="${esc(relative(leafPath(row), `/pages/${city.province}/${city.slug}/`))}index.html">${esc(city.region)} 도시 안내 페이지</a>`);
-  links.push('<a href="../index.html">전체 읍·면·동 목록 보기</a>');
+  links.push(`<a href="${esc(relative(leafPath(row), districtPath(row)))}index.html">전체 읍·면·동 목록 보기</a>`);
   return `  <section class="emd-related"><h2 class="section-title">${esc(row.district || row.province)} 읍·면·동별 안내</h2><div class="list">${links.join('\n')}</div></section>\n\n`;
 }
 
@@ -173,7 +173,7 @@ function renderLeaf(row, index, siblings, city) {
   const url = canonical(leafPath(row));
   const faq = makeFAQ(row);
   const subtitle = `${esc(row.full_name)}의 복합기 기종·요금과 설치 상담 시 확인할 내용을 안내합니다.`;
-  const metaDesc = getMetaDescription(url, `${row.full_name} 복합기렌탈 상담 가이드. 기종별 렌탈료, 설치 준비, 소모품·AS 확인 사항과 ${row.district || row.province} 읍면동 목록을 확인하세요.`);
+  const metaDesc = getMetaDescription(leafPath(row), `${row.full_name} 복합기렌탈 상담 가이드. 기종별 렌탈료, 설치 준비, 소모품·AS 확인 사항과 ${row.district || row.province} 읍면동 목록을 확인하세요.`);
   const schema = jsonLd([
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.items.map(({q, a}) => ({ '@type': 'Question', name: stripHtml(q), acceptedAnswer: { '@type': 'Answer', text: stripHtml(a) } })) },
     breadcrumbSchema(crumbs),
@@ -227,6 +227,7 @@ function addCityLinks(filePath, links) {
 function buildEmd() {
   const source = JSON.parse(fs.readFileSync(SOURCE, 'utf8').replace(/^\uFEFF/, ''));
   const rows = validateSource(source);
+  const rootLeafPaths = new Set(rows.map(row => leafPath(row)));
   const districts = new Map(), provinces = new Map(), cityLinks = new Map();
   const outputs = new Map();
   for (const row of rows) {
@@ -238,7 +239,8 @@ function buildEmd() {
   }
   function queue(urlPath, content) {
     const file = path.resolve(ROOT, ...urlPath.split('/').filter(Boolean), 'index.html');
-    if (!file.startsWith(EMD_ROOT + path.sep) || outputs.has(file)) throw new Error(`잘못된/중복 출력 경로: ${file}`);
+    if ((!file.startsWith(EMD_ROOT + path.sep) && !rootLeafPaths.has(urlPath)) ||
+      !file.startsWith(ROOT + path.sep) || outputs.has(file)) throw new Error(`잘못된/중복 출력 경로: ${file}`);
     outputs.set(file, content);
   }
   let mapped = 0;
@@ -256,7 +258,7 @@ function buildEmd() {
   });
   for (const [urlPath, items] of districts) {
     const row = items[0];
-    const links = items.map(item => `    <a href="${esc(leafPath(item).split('/').slice(-2)[0])}/index.html">${esc(item.name)} 복합기렌탈</a>`);
+    const links = items.map(item => `    <a href="${esc(relative(urlPath, leafPath(item)))}index.html">${esc(item.name)} 복합기렌탈</a>`);
     const crumbs = breadcrumbs(row).slice(0, -1);
     queue(urlPath, renderHub(`${row.province} ${row.district || ''} 읍·면·동`.trim(), urlPath, links, crumbs, `${row.full_name.replace(` ${row.name}`, '')}의 ${items.length}개 행정읍면동 복합기렌탈 상담 안내. 기종·요금과 설치 준비 정보를 지역별로 확인하세요.`));
   }

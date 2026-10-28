@@ -5,17 +5,20 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
 const { createRedirects, redirectRules } = require('../netlify/functions/lib/emd-url-paths');
+const { listRouterFiles } = require('./lib/router-files');
+const { listCopierEmdFiles } = require('./lib/copier-emd-files');
 const { updateLocalSitemaps } = require('./lib/local-sitemap-lastmod');
 const ROOT = path.resolve(__dirname, '..');
 const ORIGIN = 'https://hanarentalbj.kr';
 const rows = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/emd_regions.json'), 'utf8')).regions;
 const routes = createRedirects(rows);
+const allowedTargets = new Set(Object.values(routes));
 const write = process.argv.includes('--write');
 const encode = value => value.split('/').map(encodeURIComponent).join('/');
 const normalize = value => value.replace(/index\.html$/, '').replace(/\/?$/, '/');
 function localFile(urlPath) {
   const file = path.resolve(ROOT, '.' + urlPath, 'index.html');
-  if (!file.startsWith(ROOT + path.sep) || !/^\/(?:router\/)?emd\//.test(urlPath)) throw new Error('이동 범위 오류: ' + file);
+  if (!file.startsWith(ROOT + path.sep) || !allowedTargets.has(urlPath)) throw new Error('이동 범위 오류: ' + file);
   return file;
 }
 function mapAbsolute(value) {
@@ -62,6 +65,8 @@ for (const folder of ['pages', 'emd', 'router']) {
   files.push(...fs.readdirSync(path.join(ROOT, folder), { recursive: true })
     .filter(file => file.endsWith('index.html')).map(file => path.join(ROOT, folder, file)));
 }
+for (const file of listRouterFiles(ROOT)) if (!files.includes(file)) files.push(file);
+for (const file of listCopierEmdFiles(ROOT)) if (!files.includes(file)) files.push(file);
 const operations = [], moves = [], outputPaths = new Set();
 for (const file of files) {
   const oldDirectory = '/' + path.relative(ROOT, path.dirname(file)).split(path.sep).join('/') + '/';

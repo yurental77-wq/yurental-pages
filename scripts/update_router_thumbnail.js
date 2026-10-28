@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
+const { listRouterFiles } = require('./lib/router-files');
 const ROOT = path.resolve(__dirname, '..');
 const PRODUCT = require('../data/router_product.json');
 const write = process.argv.includes('--write');
@@ -11,8 +12,7 @@ const asset = path.join(ROOT, PRODUCT.introImage);
 assert.ok(fs.existsSync(asset), '배경 제거 이미지가 없습니다.');
 const operations = [];
 let pages = 0;
-for (const relative of fs.readdirSync(path.join(ROOT, 'router'), { recursive: true }).filter(file => file.endsWith('index.html'))) {
-  const file = path.join(ROOT, 'router', relative);
+for (const file of listRouterFiles(ROOT)) {
   const html = fs.readFileSync(file, 'utf8');
   if (!html.includes('<body class="router-page">')) continue;
   const matches = [...html.matchAll(/<img class="intro-thumbnail"[^>]+>/g)];

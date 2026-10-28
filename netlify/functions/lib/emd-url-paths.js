@@ -9,12 +9,20 @@ const PROVINCE_LABELS = {
 };
 const prefix = product => product === '라우터렌탈' ? '/router/emd/' : '/emd/';
 const districtSlug = row => (row.district || '세종시').replace(/\s+/g, '-');
+const areaSlug = row => `${PROVINCE_LABELS[row.province] || row.province}-${districtSlug(row)}`;
 function districtPath(row, product = '복합기렌탈') {
-  const area = `${PROVINCE_LABELS[row.province] || row.province}-${districtSlug(row)}`;
-  return `${prefix(product)}${area}/`;
+  return `${prefix(product)}${areaSlug(row)}/`;
 }
 function leafPath(row, product = '복합기렌탈') {
-  return `${districtPath(row, product)}${row.name}-${product}/`;
+  return `/${areaSlug(row)}/${row.name}-${product}/`;
+}
+function previousRouterLeafPath(row) { return `${districtPath(row, '라우터렌탈')}${row.name}-라우터렌탈/`; }
+function previousCopierLeafPath(row) { return `${districtPath(row)}${row.name}-복합기렌탈/`; }
+function isRootRouterLeafPath(value) {
+  return /^\/[^/]+\/[^/]+-라우터렌탈\/$/.test(value) && !/^\/\.{1,2}\//.test(value);
+}
+function isRootCopierLeafPath(value) {
+  return /^\/[^/]+\/[^/]+-복합기렌탈\/$/.test(value) && !/^\/\.{1,2}\//.test(value);
 }
 function legacyDistrictPath(row, product = '복합기렌탈') {
   return `${prefix(product)}${row.province}/${districtSlug(row)}/`;
@@ -24,14 +32,17 @@ function legacyLeafPath(row, product = '복합기렌탈') {
 }
 function createRedirects(rows) {
   const routes = {}, targets = new Map();
+  const add = (oldPath, newPath, owner) => {
+    if (targets.has(newPath) && targets.get(newPath) !== owner) throw new Error('새 URL 중복: ' + newPath);
+    if (Object.hasOwn(routes, oldPath) && routes[oldPath] !== newPath) throw new Error('이전 URL 충돌: ' + oldPath);
+    routes[oldPath] = newPath; targets.set(newPath, owner);
+  };
   for (const row of rows) for (const product of ['복합기렌탈', '라우터렌탈']) {
-    for (const [oldPath, newPath] of [
-      [legacyDistrictPath(row, product), districtPath(row, product)],
-      [legacyLeafPath(row, product), leafPath(row, product)],
-    ]) {
-      if (targets.has(newPath) && targets.get(newPath) !== oldPath) throw new Error('새 URL 중복: ' + newPath);
-      routes[oldPath] = newPath; targets.set(newPath, oldPath);
-    }
+    add(legacyDistrictPath(row, product), districtPath(row, product), legacyDistrictPath(row, product));
+    add(legacyLeafPath(row, product), leafPath(row, product), `${product}:${row.code}`);
+    // 배포했던 /emd/, /router/emd/ 단축 주소도 최종 주소로 직접 이동한다.
+    const previous = product === '라우터렌탈' ? previousRouterLeafPath(row) : previousCopierLeafPath(row);
+    add(previous, leafPath(row, product), `${product}:${row.code}`);
   }
   return routes;
 }
@@ -46,4 +57,6 @@ function redirectRules() {
   lines.push('# EMD-URL-REDIRECTS:END');
   return lines.join('\n') + '\n';
 }
-module.exports = { PROVINCE_LABELS, districtSlug, districtPath, leafPath, legacyDistrictPath, legacyLeafPath, createRedirects, redirectRules };
+module.exports = { PROVINCE_LABELS, districtSlug, areaSlug, districtPath, leafPath, previousRouterLeafPath,
+  previousCopierLeafPath, isRootRouterLeafPath, isRootCopierLeafPath,
+  legacyDistrictPath, legacyLeafPath, createRedirects, redirectRules };

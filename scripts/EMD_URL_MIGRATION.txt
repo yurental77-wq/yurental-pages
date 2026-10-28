@@ -1,15 +1,16 @@
 읍면동 URL 변경 (2026-10-28)
 
-복합기: /emd/부산-동구/초량제3동-복합기렌탈/
-라우터: /router/emd/부산-동구/초량제3동-라우터렌탈/
-시군구 목록도 /emd/부산-동구/, /router/emd/부산-동구/로 통일.
+복합기 읍면동: /부산-동구/초량제3동-복합기렌탈/
+라우터 읍면동: /부산-동구/초량제3동-라우터렌탈/
+시군구 목록은 /emd/부산-동구/, /router/emd/부산-동구/를 유지.
 시도 목록과 기존 도시(/pages/, /router/익산/ 등) URL은 유지.
+라우터의 시군구 목록 /router/emd/부산-동구/ 역시 유지한다.
 
 이동: node scripts/migrate_emd_urls.js --write
 검사: node scripts/validate_emd_urls.js
 
-기존 7,130개 읍면동 + 512개 시군구 목록 주소는
-netlify/functions/data/emd_url_redirects.json에서 새 주소에 1:1로 연결.
+기존 7,130개 최초 읍면동 + 512개 시군구 목록 + 7,130개 이전 단축 주소는
+netlify/functions/data/emd_url_redirects.json에서 최종 주소로 직접 연결.
 _redirects의 6개 공통 규칙이 이전 요청을 emd-redirect 함수로 전달하고,
 함수가 HTTP 301 + Location으로 응답한다. 새 정적 HTML은 우선 제공된다.
 원래 주소는 Netlify event.path/rawUrl에서 읽는다. rewrite 목적지의 쿼리를

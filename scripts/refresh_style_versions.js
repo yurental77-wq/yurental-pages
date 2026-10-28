@@ -4,6 +4,8 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
+const { listRouterFiles } = require('./lib/router-files');
+const { listCopierEmdFiles } = require('./lib/copier-emd-files');
 const ROOT = path.resolve(__dirname, '..');
 const write = process.argv.includes('--write');
 const files = ['index.html', 'template.html', 'page_template.html', 'province_hub_template.html',
@@ -14,6 +16,14 @@ for (const dir of ['pages', 'emd', 'router']) {
   }
 }
 let updated = 0;
+for (const file of listRouterFiles(ROOT)) {
+  const relative = path.relative(ROOT, file);
+  if (!relative.startsWith('router' + path.sep)) files.push(relative);
+}
+for (const file of listCopierEmdFiles(ROOT)) {
+  const relative = path.relative(ROOT, file);
+  if (!files.includes(relative)) files.push(relative);
+}
 for (const file of files) {
   const target = path.join(ROOT, file);
   const html = fs.readFileSync(target, 'utf8');

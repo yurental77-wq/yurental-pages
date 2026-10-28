@@ -3,12 +3,17 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
 const vm = require('vm');
-const { createRedirects, districtPath, leafPath } = require('../netlify/functions/lib/emd-url-paths');
+const { createRedirects, districtPath, leafPath, isRootRouterLeafPath, isRootCopierLeafPath } = require('../netlify/functions/lib/emd-url-paths');
 const ROOT = path.resolve(__dirname, '..');
 const { handler } = require('../netlify/functions/emd-redirect');
 const rows = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/emd_regions.json'), 'utf8')).regions;
 const routes = require('../netlify/functions/data/emd_url_redirects.json').routes;
 assert.deepEqual(routes, createRedirects(rows));
+assert.equal(isRootRouterLeafPath('/부산-동구/초량제3동-라우터렌탈/'), true);
+assert.equal(isRootRouterLeafPath('//evil.example/라우터렌탈/'), false);
+assert.equal(isRootRouterLeafPath('/../초량제3동-라우터렌탈/'), false);
+assert.equal(isRootCopierLeafPath('/부산-동구/초량제3동-복합기렌탈/'), true);
+assert.equal(isRootCopierLeafPath('/../초량제3동-복합기렌탈/'), false);
 const encode = value => value.split('/').map(encodeURIComponent).join('/');
 const fileFor = value => path.join(ROOT, ...value.split('/').filter(Boolean), 'index.html');
 const rules = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf8').split(/\r?\n/)
@@ -71,6 +76,8 @@ async function throughRules(urlPath) {
       const url = leafPath(row, product);
       assert.ok(!targets.has(url)); targets.add(url);
       assert.ok(!url.includes(row.code));
+      if (product === '라우터렌탈') assert.ok(isRootRouterLeafPath(url) && !url.includes('/router/') && !url.includes('/emd/'));
+      else assert.ok(isRootCopierLeafPath(url) && !url.includes('/emd/'));
       const html = fs.readFileSync(fileFor(url), 'utf8');
       assert.ok(html.includes(`'<a href="' + brand.link + '"`), '배너 링크 템플릿 손상: ' + url);
       assert.ok(html.includes(`'<img src="' + pick(brand.imgs) + '"`), '배너 이미지 템플릿 손상: ' + url);

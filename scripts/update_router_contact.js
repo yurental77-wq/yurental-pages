@@ -5,17 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
 const { moveRouterContact } = require('./lib/router-contact-layout');
+const { listRouterFiles } = require('./lib/router-files');
 const ROOT = path.resolve(__dirname, '..');
 const write = process.argv.includes('--write');
-const files = [];
-function walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const file = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(file);
-    else if (entry.name === 'index.html') files.push(file);
-  }
-}
-walk(path.join(ROOT, 'router'));
+const files = listRouterFiles(ROOT);
 const operations = [];
 let details = 0, lists = 0;
 const contactPattern = /<h2 class="section-title">[^<]*라우터렌탈 상담<\/h2>\s*<section class="router-contact">[\s\S]*?<\/section>/;

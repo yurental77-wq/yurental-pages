@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
+const { listCopierEmdFiles } = require('./lib/copier-emd-files');
 const ROOT = path.resolve(__dirname, '..');
 const write = process.argv.includes('--write');
 const asset = path.join(ROOT, 'assets/cnr-5g500-cutout.webp');
@@ -12,6 +13,7 @@ const files = [path.join(ROOT, 'index.html')];
 for (const dir of ['pages', 'emd']) {
   files.push(...fs.readdirSync(path.join(ROOT, dir), { recursive: true }).filter(file => file.endsWith('index.html')).map(file => path.join(ROOT, dir, file)));
 }
+for (const file of listCopierEmdFiles(ROOT)) if (!files.includes(file)) files.push(file);
 const rowPattern = /<tr class="pt-router">[\s\S]*?<\/tr>/g;
 const operations = [];
 let checked = 0;

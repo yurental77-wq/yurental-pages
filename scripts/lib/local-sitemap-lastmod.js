@@ -3,13 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { koreaDate, contentHash, pagePath, withLastmod } = require('../../netlify/functions/lib/sitemap-lastmod');
+const { areaSlug } = require('../../netlify/functions/lib/emd-url-paths');
 const SITEMAPS = ['sitemap.xml', 'sitemap-emd.xml', 'sitemap-router.xml'];
 
 function createResolver(root) {
   const git = args => execFileSync('git', ['-c', 'core.quotepath=false', ...args], {
     cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
   });
-  const paths = ['pages', 'emd', 'router', 'index.html'];
+  const rows = JSON.parse(fs.readFileSync(path.join(root, 'data/emd_regions.json'), 'utf8')).regions;
+  const paths = ['pages', 'emd', 'router', 'index.html', ...new Set(rows.map(areaSlug))];
   const hashes = new Map();
   for (const line of git(['ls-tree', '-r', '--format=%(objectname) %(path)', 'HEAD', '--', ...paths]).split('\n')) {
     if (/^[a-f0-9]{40} /.test(line)) hashes.set(line.slice(41).trimEnd(), line.slice(0, 40));

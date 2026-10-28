@@ -194,6 +194,7 @@ function addCopierLink(file, label, fromPath, routerPath) {
 function buildRouter() {
   const source = JSON.parse(fs.readFileSync(path.join(ROOT,'data/emd_regions.json'),'utf8'));
   const rows = validateSource(source);
+  const rootLeafPaths = new Set(rows.map(row => emdLeafPath(row, '라우터렌탈')));
   const outputs = new Map(), districts = new Map(), provinces = new Map(), cityProvinces = new Map();
   const cityCounts = new Map();
   DATA.forEach(city=>cityCounts.set(city.region,(cityCounts.get(city.region)||0)+1));
@@ -220,7 +221,8 @@ function buildRouter() {
   }
   function queue(urlPath, html) {
     const file = path.resolve(ROOT,...urlPath.split('/').filter(Boolean),'index.html');
-    if (!file.startsWith(ROUTER_ROOT+path.sep) || outputs.has(urlPath)) throw new Error('중복/잘못된 라우터 경로: '+urlPath);
+    if ((!file.startsWith(ROUTER_ROOT+path.sep) && !rootLeafPaths.has(urlPath)) ||
+      !file.startsWith(ROOT+path.sep) || outputs.has(urlPath)) throw new Error('중복/잘못된 라우터 경로: '+urlPath);
     if (/\{\{[A-Z_]+\}\}/.test(html)) throw new Error('미치환 라우터 템플릿: '+urlPath);
     outputs.set(urlPath,{file,html});
   }

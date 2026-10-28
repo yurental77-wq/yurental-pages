@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert/strict');
 const crypto = require('crypto');
+const { listRouterFiles } = require('./lib/router-files');
 const { escapeHtml } = require('../netlify/functions/lib/copier-header-intros');
 const ROOT = path.resolve(__dirname, '..');
 const DATA_FILE = path.join(ROOT, 'netlify/functions/data/router_header_intros.json');
@@ -79,14 +80,13 @@ function validate(entry, region, key) {
   assert.ok(!/[<>\r\n]/.test(entry.text), key);
 }
 const targets = [];
-for (const file of fs.readdirSync(path.join(ROOT, 'router'), { recursive: true }).filter(file => file.endsWith('index.html'))) {
-  const absolute = path.join(ROOT, 'router', file);
+for (const absolute of listRouterFiles(ROOT)) {
   const html = fs.readFileSync(absolute, 'utf8');
   if (!html.includes('<body class="router-page">')) continue;
   const heading = html.match(/<h1>([^<]+)<\/h1>/)[1];
   const region = heading.replace(/ 5G 라우터렌탈 · CNR-5G500 무선공유기 임대$/, '');
   assert.notEqual(region, heading, absolute);
-  const key = '/router/' + file.split(path.sep).join('/').replace(/index\.html$/, '');
+  const key = '/' + path.relative(ROOT, absolute).split(path.sep).join('/').replace(/index\.html$/, '');
   targets.push({ key, region, file: absolute, html });
 }
 assert.equal(targets.length, 4048);

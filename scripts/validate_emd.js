@@ -27,9 +27,10 @@ for (const [province, district, region] of checks) {
   assert.equal(findCity(row)?.region, region);
 }
 assert.equal(findCity(rows.find(row => row.province === '제주특별자치도')), null);
-const files = [];
-function walk(dir) { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const file = path.join(dir, entry.name); if (entry.isDirectory()) walk(file); else if (entry.name === 'index.html') files.push(file); } }
-walk(path.join(ROOT, 'emd'));
+const { listCopierEmdFiles } = require('./lib/copier-emd-files');
+const files = listCopierEmdFiles(ROOT);
+const { isRootCopierLeafPath } = require('../netlify/functions/lib/emd-url-paths');
+assert.equal(files.filter(file => isRootCopierLeafPath('/' + path.relative(ROOT, path.dirname(file)).split(path.sep).join('/') + '/')).length, rows.length);
 assert.equal(files.length, 3838);
 const titleSet = new Set(), canonicalSet = new Set();
 let checkedLinks = 0, faqPages = 0;
@@ -40,7 +41,7 @@ for (const file of files) {
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, file);
   const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
   const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
-  assert.ok(title && canonical && canonical.startsWith(SITE_URL + '/emd/'), file);
+  assert.ok(title && canonical && canonical.startsWith(SITE_URL + '/'), file);
   assert.ok(!titleSet.has(title) && !canonicalSet.has(canonical), `중복 SEO: ${file}`);
   titleSet.add(title); canonicalSet.add(canonical);
   const base = SITE_URL + '/' + path.relative(ROOT, file).split(path.sep).join('/');
@@ -80,7 +81,7 @@ const sitemap = fs.readFileSync(path.join(ROOT, 'sitemap-emd.xml'), 'utf8');
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
 assert.equal(urls.length, files.length);
 assert.deepEqual(new Set(urls), canonicalSet);
-assert.ok(urls.every(url => /^https:\/\/hanarentalbj\.kr\/emd\//.test(url) && !/[가-힣 ]/.test(url)));
+assert.ok(urls.every(url => /^https:\/\/hanarentalbj\.kr\//.test(url) && !/[가-힣 ]/.test(url)));
 const robots = fs.readFileSync(path.join(ROOT, 'robots.txt'), 'utf8');
 assert.ok(robots.includes('Sitemap: ' + SITE_URL + '/sitemap.xml'));
 assert.equal(robots.split('Sitemap: ' + SITE_URL + '/sitemap-emd.xml').length - 1, 1);
