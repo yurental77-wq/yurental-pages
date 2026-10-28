@@ -1,6 +1,7 @@
 ﻿const fs = require('fs');
 const path = require('path');
 const { getHeaderIntro } = require('./lib/copier-header-intros');
+const { withLastmod, createRemoteResolver } = require('./lib/sitemap-lastmod');
 
 const DEFAULT_BATCH_SIZE = 50;
 const MAX_BATCH_SIZE = 300; // GitHub API/함수 실행시간 한도를 고려한 1회 최대치
@@ -262,6 +263,23 @@ async function readProgress() {
   }
 }
 
+async function renderDatedSitemap(items, generatedFiles) {
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  const ref = await ghApi(`/git/ref/heads/${branch}`);
+  const revision = ref.object.sha;
+  const [tree, previousFile] = await Promise.all([
+    ghApi(`/git/trees/${revision}?recursive=1`),
+    ghApi(`/contents/sitemap.xml?ref=${revision}`).catch(error => {
+      if (error.message.includes('404')) return null;
+      throw error;
+    }),
+  ]);
+  if (tree.truncated) throw new Error('수정일 비교를 위한 GitHub 파일 목록이 잘렸습니다.');
+  const previousXml = previousFile ? Buffer.from(previousFile.content, 'base64').toString('utf8') : '';
+  const resolve = createRemoteResolver(previousXml, tree.tree, generatedFiles, new Date());
+  return withLastmod(renderSitemap(items), resolve);
+}
+
 async function commitFiles(files, message) {
   const branch = process.env.GITHUB_BRANCH || 'main';
   const ref = await ghApi(`/git/ref/heads/${branch}`);
@@ -395,7 +413,7 @@ exports.handler = async function (event) {
     const topHub = renderTopHub([...allProvinces].sort());
     filesToCommit.push({ path: topHub.path, content: topHub.content });
 
-    filesToCommit.push({ path: 'sitemap.xml', content: renderSitemap(newPublished) });
+    filesToCommit.push({ path: 'sitemap.xml', content: await renderDatedSitemap(newPublished, filesToCommit) });
     filesToCommit.push({ path: 'rss.xml', content: renderRSS(newPublished) });
 
     const logEntry = {

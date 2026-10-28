@@ -8,6 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const { emdBreadcrumbs } = require('./scripts/lib/emd-breadcrumbs');
 const { getMetaDescription } = require('./netlify/functions/lib/copier-header-intros');
+const { updateLocalSitemaps } = require('./scripts/lib/local-sitemap-lastmod');
+const { districtPath, leafPath } = require('./netlify/functions/lib/emd-url-paths');
 const { ROOT, SITE_URL, DATA, renderPage, seededRandom, stripHtml, encodeUrl } = require('./build');
 const HUB_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/province_hub_template.html'), 'utf8');
 const EMD_ROOT = path.join(ROOT, 'emd');
@@ -48,9 +50,6 @@ function validateSource(source) {
   return rows;
 }
 
-function districtSlug(row) { return (row.district || '세종시').replace(/\s+/g, '-'); }
-function districtPath(row) { return `/emd/${row.province}/${districtSlug(row)}/`; }
-function leafPath(row) { return `${districtPath(row)}${row.name}-${row.code}-복합기렌탈/`; }
 function canonical(urlPath) { return encodeUrl(SITE_URL + urlPath); }
 function relative(from, to) {
   const result = path.posix.relative(from, to);
@@ -190,7 +189,7 @@ function renderLeaf(row, index, siblings, city) {
     ...(city ? {} : { cardsHtml: fallbackCards(row) }),
     filePath: path.join(ROOT, ...leafPath(row).split('/').filter(Boolean), 'index.html'),
   });
-  let html = rendered.content.replaceAll('../../../assets/', '../../../../assets/');
+  let html = rendered.content.replaceAll('../../../assets/', relative(leafPath(row), '/') + 'assets/');
   html = html.replace(/<div class="crumb">[\s\S]*?<\/div>/, crumbHtml(crumbs, leafPath(row)));
   html = html.replace(/<div class="intro-copy">[\s\S]*?<\/div>/, `<div class="intro-copy">
       <strong>${esc(row.full_name)} 복합기렌탈</strong> 상담을 위한 안내 페이지입니다.<br>
@@ -263,7 +262,7 @@ function buildEmd() {
   }
   for (const [province, districtKeys] of provinces) {
     const urlPath = `/emd/${province}/`;
-    const links = [...districtKeys].map(key => { const items = districts.get(key); return `    <a href="${esc(districtSlug(items[0]))}/index.html">${esc(items[0].district || '세종시')} (${items.length}곳)</a>`; });
+    const links = [...districtKeys].map(key => { const items = districts.get(key); return `    <a href="${esc(relative(urlPath, districtPath(items[0])))}index.html">${esc(items[0].district || '세종시')} (${items.length}곳)</a>`; });
     const crumbs = [{name:'전국 복합기렌탈 홈',url:'/'},{name:'전국 읍·면·동 목록',url:'/emd/'},{name:province,url:urlPath}];
     queue(urlPath, renderHub(`${province} 읍·면·동`, urlPath, links, crumbs, `${province}의 시·군·구별 읍면동 복합기렌탈 안내 목록입니다.`));
   }
@@ -288,6 +287,7 @@ function buildEmd() {
   const urls = [...outputs.keys()].map(file => canonical('/' + path.relative(ROOT, path.dirname(file)).split(path.sep).join('/') + '/'));
   const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map(url => `  <url><loc>${esc(url)}</loc></url>`).join('\n') + '\n</urlset>\n';
   writeIfChanged(path.join(ROOT, 'sitemap-emd.xml'), sitemap);
+  updateLocalSitemaps(ROOT, { names: ['sitemap.xml', 'sitemap-emd.xml'] });
   const robotsPath = path.join(ROOT, 'robots.txt');
   const robots = fs.readFileSync(robotsPath, 'utf8');
   const sitemapLine = `Sitemap: ${SITE_URL}/sitemap-emd.xml`;

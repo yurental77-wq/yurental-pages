@@ -1815,3 +1815,11 @@
 /pages/광역시/세종-세종시-프린터대여/*  /pages/광역시/세종-세종시-복합기렌탈/  301
 /pages/광역시/세종-세종시-복합기대여/*  /pages/광역시/세종-세종시-복합기렌탈/  301
 /pages/광역시/세종-세종시-복사기대여/*  /pages/광역시/세종-세종시-복합기렌탈/  301
+# EMD-URL-REDIRECTS:START
+/emd/:province/:district/:leaf/*  /.netlify/functions/emd-redirect?from=/emd/:province/:district/:leaf/&tail=:splat  200
+/emd/:province/:district/:leaf  /.netlify/functions/emd-redirect?from=/emd/:province/:district/:leaf  200
+/emd/:province/:district  /.netlify/functions/emd-redirect?from=/emd/:province/:district  200
+/router/emd/:province/:district/:leaf/*  /.netlify/functions/emd-redirect?from=/router/emd/:province/:district/:leaf/&tail=:splat  200
+/router/emd/:province/:district/:leaf  /.netlify/functions/emd-redirect?from=/router/emd/:province/:district/:leaf  200
+/router/emd/:province/:district  /.netlify/functions/emd-redirect?from=/router/emd/:province/:district  200
+# EMD-URL-REDIRECTS:END

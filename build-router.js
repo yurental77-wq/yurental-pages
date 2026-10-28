@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { emdBreadcrumbs, routerDistrictBreadcrumbs } = require('./scripts/lib/emd-breadcrumbs');
 const { moveRouterContact } = require('./scripts/lib/router-contact-layout');
+const { updateLocalSitemaps } = require('./scripts/lib/local-sitemap-lastmod');
+const { leafPath: emdLeafPath } = require('./netlify/functions/lib/emd-url-paths');
 const { ROOT, SITE_URL, DATA, renderPage, encodeUrl, stripHtml, seededRandom } = require('./build');
 const { validateSource, findCity, leafPath, districtPath } = require('./build-emd');
 const PRODUCT = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/router_product.json'), 'utf8'));
@@ -197,7 +199,7 @@ function buildRouter() {
   DATA.forEach(city=>cityCounts.set(city.region,(cityCounts.get(city.region)||0)+1));
   const cityPath = city=>'/router/'+(cityCounts.get(city.region)>1 ? city.province+'-' : '')+city.region.replace(/\s+/g,'-')+'/';
   const routerDistrict = row=>'/router'+districtPath(row);
-  const routerLeaf = row=>routerDistrict(row)+row.name+'-'+row.code+'-라우터렌탈/';
+  const routerLeaf = row=>emdLeafPath(row, '라우터렌탈');
   const copierCity = city=>'/pages/'+city.province+'/'+city.slug+'/';
   const mainCrumb = {name:'전국 렌탈 홈',url:'/'};
   const routerCrumb = {name:'전국 라우터렌탈',url:'/router/'};
@@ -287,6 +289,7 @@ function buildRouter() {
   const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+
     [...outputs.keys()].map(url=>'<url><loc>'+esc(encodeUrl(SITE_URL+url))+'</loc></url>').join('\n')+'\n</urlset>\n';
   writeIfChanged(path.join(ROOT,'sitemap-router.xml'),sitemap);
+  updateLocalSitemaps(ROOT);
   const robotsFile = path.join(ROOT,'robots.txt'), robots = fs.readFileSync(robotsFile,'utf8');
   const sitemapLine = 'Sitemap: '+SITE_URL+'/sitemap-router.xml';
   if (!robots.includes(sitemapLine)) writeIfChanged(robotsFile,robots.trimEnd()+'\n'+sitemapLine+'\n');

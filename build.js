@@ -9,6 +9,8 @@
 const fs = require('fs');
 const path = require('path');
 const { getHeaderIntro } = require('./netlify/functions/lib/copier-header-intros');
+const { updateLocalSitemaps } = require('./scripts/lib/local-sitemap-lastmod');
+const { redirectRules } = require('./netlify/functions/lib/emd-url-paths');
 
 const ROOT = path.resolve(__dirname);
 const SITE_URL = 'https://hanarentalbj.kr';
@@ -411,7 +413,7 @@ function renderRedirects(allData, keptData) {
     const to = `/pages/${target.province}/${target.slug}/`;
     lines.push(`${from}  ${to}  301`);
   });
-  return lines.join('\n') + '\n';
+  return lines.join('\n') + '\n' + redirectRules();
 }
 
 function writeFile(filePath, content) {
@@ -481,6 +483,9 @@ if (fs.existsSync(path.join(ROOT, 'data', 'emd_regions.json'))) {
 if (fs.existsSync(path.join(ROOT, 'data', 'router_product.json'))) {
   require('./build-router').buildRouter();
 }
+
+// 하위 빌드의 내부 링크 반영까지 끝난 최종 HTML 기준으로 수정일을 기록한다.
+updateLocalSitemaps(ROOT);
 
 const elapsed = ((Date.now() - start) / 1000).toFixed(1);
 console.log(`\n✅ 완료! ${DATA.length}개 페이지 + sitemap.xml + rss.xml + _redirects(${redirectCount}건) (${elapsed}초)`);
