@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getHeaderIntro } = require('./netlify/functions/lib/copier-header-intros');
 
 const ROOT = path.resolve(__dirname);
 const SITE_URL = 'https://hanarentalbj.kr';
@@ -303,6 +304,7 @@ function renderPage(item, globalIdx, options = {}) {
   const SYN = ['복합기렌탈','복합기임대','복합기대여','복사기렌탈','복사기임대','복사기대여','프린터렌탈','프린터임대','프린터대여'];
   const keywords = SYN.map(s => `${region}${s}`).join(',') + `,${region} 복합기렌탈,복합기렌탈,복사기임대,프린터대여,하나렌탈`;
   const canonical = options.canonical || `${SITE_URL}/pages/${province}/${slug}/`;
+  const headerIntro = getHeaderIntro(new URL(canonical).pathname, subtitle);
   // 표시 지역명을 페이지 지역명으로 통일하므로, 같은 업체명(sangho)은 페이지당 1개만 노출
   // (예: '포항 북구'·'포항 남구'·'포항시'가 모두 '포항'으로 통일돼 중복 카드로 보이는 문제 해결)
   const seen = new Set();
@@ -323,7 +325,7 @@ function renderPage(item, globalIdx, options = {}) {
 
   let html = PAGE_TEMPLATE;
   const reps = {
-    '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{META_TITLE}}': metaTitle,
+    '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{HEADER_INTRO}}': headerIntro, '{{META_TITLE}}': metaTitle,
     '{{META_DESC}}': metaDesc, '{{KEYWORDS}}': keywords, '{{CANONICAL}}': canonical,
     '{{REGION}}': region, '{{PRODUCT}}': product, '{{PROVINCE}}': province,
     '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml, '{{INFO_CONTENT}}': infoHtml,

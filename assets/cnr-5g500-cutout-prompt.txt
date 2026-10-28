@@ -1,0 +1,6 @@
+Mode: built-in imagegen, transparent background enabled.
+Edit target: cnr-5g500-source.webp (original image retained).
+
+Use case: background-extraction. Image 1 is the EDIT TARGET: the existing CNR-5G500 black 5G router product photo. Remove only the white background and the cast ground shadow, producing a precise isolated cutout with a genuinely transparent alpha background. Preserve the exact router geometry, camera angle, size proportions, matte black finish, embossed '5G' lettering, front indicator icons, highlights and all product details. Do not redesign, add parts, alter text, or add any background, frame, halo, floor, shadow or extra elements. Center the complete un-cropped original product within a square transparent canvas with modest transparent margins. Intended asset: existing website product thumbnail.
+
+Output: cnr-5g500-cutout.webp. Lossless WebP conversion; alpha preserved exactly.

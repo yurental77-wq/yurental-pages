@@ -2,6 +2,7 @@
   "model": "CNR-5G500",
   "brand": "CNSLINK",
   "image": "https://yurental.com/rental/assets/product-showcase/cnr-5g500-white-v1.webp",
+  "introImage": "assets/cnr-5g500-cutout.webp",
   "sourceUrl": "https://yurental.com/rental/%EB%9D%BC%EC%9A%B0%ED%84%B0%EB%A0%8C%ED%83%88/index.html",
   "regionalSourceUrl": "https://yurental.com/rental/%EB%9D%BC%EC%9A%B0%ED%84%B0%EB%A0%8C%ED%83%88/%EC%9D%B5%EC%82%B0/index.html",
   "verifiedDate": "2026-10-12",

@@ -6,6 +6,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { emdBreadcrumbs } = require('./scripts/lib/emd-breadcrumbs');
+const { getMetaDescription } = require('./netlify/functions/lib/copier-header-intros');
 const { ROOT, SITE_URL, DATA, renderPage, seededRandom, stripHtml, encodeUrl } = require('./build');
 const HUB_TEMPLATE = fs.readFileSync(path.join(ROOT, 'netlify/functions/templates/province_hub_template.html'), 'utf8');
 const EMD_ROOT = path.join(ROOT, 'emd');
@@ -168,11 +170,11 @@ function relatedLinks(row, siblings, city) {
 }
 
 function renderLeaf(row, index, siblings, city) {
-  const crumbs = breadcrumbs(row);
+  const crumbs = emdBreadcrumbs(row, districtPath(row), leafPath(row), '복합기렌탈');
   const url = canonical(leafPath(row));
   const faq = makeFAQ(row);
   const subtitle = `${esc(row.full_name)}의 복합기 기종·요금과 설치 상담 시 확인할 내용을 안내합니다.`;
-  const metaDesc = `${row.full_name} 복합기렌탈 상담 가이드. 기종별 렌탈료, 설치 준비, 소모품·AS 확인 사항과 ${row.district || row.province} 읍면동 목록을 확인하세요.`;
+  const metaDesc = getMetaDescription(url, `${row.full_name} 복합기렌탈 상담 가이드. 기종별 렌탈료, 설치 준비, 소모품·AS 확인 사항과 ${row.district || row.province} 읍면동 목록을 확인하세요.`);
   const schema = jsonLd([
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.items.map(({q, a}) => ({ '@type': 'Question', name: stripHtml(q), acceptedAnswer: { '@type': 'Answer', text: stripHtml(a) } })) },
     breadcrumbSchema(crumbs),

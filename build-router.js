@@ -2,6 +2,8 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { emdBreadcrumbs, routerDistrictBreadcrumbs } = require('./scripts/lib/emd-breadcrumbs');
+const { moveRouterContact } = require('./scripts/lib/router-contact-layout');
 const { ROOT, SITE_URL, DATA, renderPage, encodeUrl, stripHtml, seededRandom } = require('./build');
 const { validateSource, findCity, leafPath, districtPath } = require('./build-emd');
 const PRODUCT = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/router_product.json'), 'utf8'));
@@ -118,12 +120,12 @@ function renderRouter(context) {
   const item = { region, province, slug:context.code || region, product:'라우터렌탈', dealers:[] };
   const page = renderPage(item, 0, {title,subtitle:'건설현장·임시 사무실·AI 교육 공간을 위한 5G·LTE 무선 인터넷 상담 안내',metaDesc:esc(description),canonical,cardsHtml:contact,faq,jsonLd:structuredData(faq, {...context,title,description}),infoHtml:usageContent(region,areaNote)});
   let html = page.content.replace('<body>', '<body class="router-page">').replaceAll('../../../assets/', prefix+'assets/');
-  html = html.replace('</head>', `  <link rel="stylesheet" href="${prefix}assets/router.css?v=20261012" />\n</head>`);
+  html = html.replace('</head>', `  <link rel="stylesheet" href="${prefix}assets/router.css?v=20261028c" />\n</head>`);
   html = html.replace(/<meta name="keywords" content="[^"]*" \/>/, `<meta name="keywords" content="${esc(region)} 라우터렌탈,${esc(region)} 5G 라우터,무선공유기 임대,에그대여,CNR-5G500,Wi-Fi 6,단기 인터넷" />`);
   html = html.replace(/(<meta (?:property="og:image"|name="twitter:image") content=")[^"]+(" \/>)/g, '$1'+PRODUCT.image+'$2');
   html = html.replace(/<div class="crumb">[\s\S]*?<\/div>/, crumbHtml(crumbs,urlPath));
   html = html.replace(/<div class="intro-copy">[\s\S]*?<\/div>/, `<div class="intro-copy"><div class="router-kicker">5G · LTE / WI-FI 6 / GIGABIT LAN</div><p class="router-lead">${esc(region)} 건설현장, 임시 사무실, AI 교육·실습<br>라우터렌탈 무선공유기임대 에그대여</p><p class="router-intro-description">유선 회선 개통을 기다리기 어렵거나 일정 기간만 인터넷이 필요한 사업장을 위한 설치형 라우터입니다.</p><p class="router-intro-description">이용 기간과 연결 장비를 정리해 현장에 맞는 렌탈 조건을 상담할 수 있습니다.</p><div class="router-intro-actions"><a class="map-btn phone" href="${phoneHref}">전화 상담 ${PRODUCT.phone}</a><a class="map-btn google" href="#router-pricing">기간별 요금 보기</a><a class="map-btn google" href="#router-specs">제품 사양 보기</a></div><p class="router-small">실제 연결 방식·속도는 통신망, 건물 구조, 설치 위치와 요금제에 따라 달라집니다.</p></div>`);
-  html = html.replace(/<img class="intro-thumbnail"[^>]+>/, `<img class="intro-thumbnail" src="${PRODUCT.image}" alt="CNR-5G500 ${esc(region)} 5G 라우터렌탈 안내" width="1254" height="1254" decoding="async" />`);
+  html = html.replace(/<img class="intro-thumbnail"[^>]+>/, `<img class="intro-thumbnail" src="${PRODUCT.introImage ? prefix + PRODUCT.introImage : PRODUCT.image}" alt="CNR-5G500 ${esc(region)} 5G 라우터렌탈 안내" width="1254" height="1254" decoding="async" />`);
   html = html.replace(/<section class="price-section">[\s\S]*?<\/section>/, priceContent());
   html = html.replace(/<section class="process-section">[\s\S]*?<\/section>/, processContent(region));
   html = html.replace(/<div class="seo-q-box">[\s\S]*?<\/div>/, `<div class="seo-q-box"><h2>${esc(region)} 라우터렌탈, 설치 주소와 이용 기간부터 확인하세요</h2><p>데이터 사용량과 장비 구성을 함께 전달하면 견적 조건을 비교하기 쉽습니다. 설치 일정과 서비스 가능 여부는 상담 후 안내받으세요.</p></div>`);
@@ -137,6 +139,8 @@ function renderRouter(context) {
   const usageStart = '<section class="info-section" aria-labelledby="router-use-title">';
   if (!pricing || !html.includes(usageStart)) throw new Error('요금표 이동 위치를 찾을 수 없습니다.');
   html = html.replace(pricing, '').replace(usageStart, pricing + '\n\n  ' + usageStart);
+  // 제품 소개 → 요금표 → 상담 제목/연락처 순서를 유지한다.
+  html = moveRouterContact(html);
   if (/\{\{[A-Z_]+\}\}/.test(html) || html.includes('월 인쇄량')) throw new Error('라우터 페이지에 잘못된 템플릿 내용이 남았습니다.');
   return html.replace(/^[\t ]+$/gm,'');
 }
@@ -239,7 +243,7 @@ function buildRouter() {
   for (const [urlPath,siblings] of districts) {
     const row = siblings[0], city = findCity(row), label = [row.province,row.district||'세종시'].join(' ');
     const provincePath = '/router/emd/'+row.province+'/';
-    const crumbs = [mainCrumb,routerCrumb,emdCrumb,{name:row.province,url:provincePath},{name:row.district||'세종시',url:urlPath}];
+    const crumbs = routerDistrictBreadcrumbs(row, urlPath);
     queue(urlPath,renderRouter({region:label,province:row.province,fullName:label,urlPath,
       areaNote:siblings.slice(0,5).map(item=>item.name).join('·')+' 등 '+label+'의 설치 주소와 현장 정보를 알려주세요.',
       crumbs,links:[...(city ? [{name:city.region+' 도시 라우터 안내',url:cityPath(city)}] : []),...siblings.map(item=>({name:item.name+' 라우터렌탈',url:routerLeaf(item)}))],
@@ -252,7 +256,7 @@ function buildRouter() {
       if (city) links.push({name:city.region+' 도시 라우터 안내',url:cityPath(city)});
       queue(leaf,renderRouter({region:item.full_name,province:item.province,fullName:item.full_name,code:item.code,urlPath:leaf,
         areaNote:item.full_name+'의 도로명 주소, 설치 층수와 실내·실외 위치를 알려주세요. 행정읍면동 자료 기준은 '+item.as_of_date+'이며 법정동 주소와 다를 수 있습니다.',
-        crumbs:[...crumbs,{name:item.name+' 라우터렌탈',url:leaf}],links}));
+        crumbs:emdBreadcrumbs(item,urlPath,leaf,'라우터렌탈'),links}));
       connections.push({file:path.join(ROOT,...leafPath(item).split('/').filter(Boolean),'index.html'),label:item.full_name,fromPath:leafPath(item),urlPath:leaf});
     });
   }

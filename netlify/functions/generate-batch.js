@@ -1,5 +1,6 @@
 ﻿const fs = require('fs');
 const path = require('path');
+const { getHeaderIntro } = require('./lib/copier-header-intros');
 
 const DEFAULT_BATCH_SIZE = 50;
 const MAX_BATCH_SIZE = 300; // GitHub API/함수 실행시간 한도를 고려한 1회 최대치
@@ -150,13 +151,14 @@ function renderPage(item, globalIdx) {
   const metaDesc = `${category} 비용 상담 전 꼭 확인하세요. ${subtitle}`;
   const keywords = `${category},${product},${region}${product},복합기렌탈,복합기임대,하나렌탈`;
   const canonical = `${SITE_URL}/pages/${province}/${slug}/`;
+  const headerIntro = getHeaderIntro(new URL(canonical).pathname, subtitle);
   const imgs = assignImgsForPage(`${region}-${product}`, dealers.length);
   const cardsHtml = dealers.map((d, i) => makeCard(d, imgs[i], product)).join('\n\n');
   const faqHtml = sampleFAQ(region, product, `${region}-${product}-${globalIdx}`);
 
   let html = PAGE_TEMPLATE;
   const reps = {
-    '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{META_TITLE}}': metaTitle,
+    '{{TITLE}}': title, '{{SUBTITLE}}': subtitle, '{{HEADER_INTRO}}': headerIntro, '{{META_TITLE}}': metaTitle,
     '{{META_DESC}}': metaDesc, '{{KEYWORDS}}': keywords, '{{CANONICAL}}': canonical,
     '{{REGION}}': region, '{{PRODUCT}}': product, '{{PROVINCE}}': province,
     '{{CARDS}}': cardsHtml, '{{FAQ}}': faqHtml,

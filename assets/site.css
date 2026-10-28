@@ -1,4 +1,5 @@
 /* Shared presentation layer; content and SEO stay in the original HTML. */
+@font-face { font-family:'Pretendard Title'; src:url('./fonts/PretendardVariable.woff2') format('woff2'); font-style:normal; font-weight:45 920; font-display:swap; }
 :root { --brand:#1a4fa0; --ink:#172b48; --muted:#586a80; --line:#e2e9f2; --radius:20px; --shadow:0 8px 28px rgba(24,49,83,.05); }
 html { scroll-behavior:smooth; }
 body { background:#f3f6fa; color:var(--ink); font-family:'Apple SD Gothic Neo','맑은 고딕',Malgun Gothic,sans-serif; line-height:1.8; word-break:keep-all; overflow-wrap:anywhere; -webkit-font-smoothing:antialiased; }
@@ -130,3 +131,103 @@ a:focus-visible,[role="button"]:focus-visible,[tabindex]:focus-visible { outline
 }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .card,.map-btn,.pt-img img { transition:none; } }
 @media (hover:none) { .pt-img { cursor:default; } .pt-img:hover img { transform:none; box-shadow:none; } }
+
+/* Regional visual refresh. Scoped away from the main page; HTML/SEO stay intact. */
+body:not(.home-page) { --muted:#45566e; background:#f5f7fb; }
+body:not(.home-page) .site-header { padding:54px 32px 52px; text-align:left; background:radial-gradient(ellipse at 90% 20%,#3269b5 0%,transparent 55%),linear-gradient(115deg,#12325f,#1a4fa0); }
+body:not(.home-page) .site-header::before { background-size:64px 64px; opacity:.7; }
+body:not(.home-page) .site-header h1 { max-width:1072px; margin:0 auto 22px; font-family:'Pretendard Title','Apple SD Gothic Neo','맑은 고딕',sans-serif; font-size:clamp(2rem,3.3vw,3rem); font-weight:780; font-synthesis:none; line-height:1.32; text-align:left; letter-spacing:-.035em; text-wrap:balance; color:#fff; text-shadow:0 2px 8px #071c3c18; }
+body:not(.home-page) .site-header h1::before { content:''; display:block; width:44px; height:4px; margin-bottom:24px; border-radius:4px; background:#a9ceff; }
+body:not(.home-page) .site-header p { max-width:900px; margin:0 auto 0 max(0px,calc((100% - 1072px)/2)); color:#edf4ff; opacity:1; font-size:1.08rem; font-weight:400; line-height:1.9; }
+body:not(.home-page) .wrap { padding-top:28px; padding-bottom:76px; }
+body:not(.home-page) .crumb { padding:15px 20px; margin-bottom:24px; border:1px solid #e2e8f2; border-radius:12px; background:#fff; box-shadow:0 4px 18px #19345303; color:#45566e; font-size:.9rem; line-height:1.9; }
+body:not(.home-page) .crumb a { text-decoration:none; font-weight:600; }
+body:not(.home-page) .crumb a:hover { text-decoration:underline; }
+body:not(.home-page) .intro-box { padding:32px; border:1px solid #dfe7f3; border-left:4px solid #1a4fa0; border-radius:22px; background:#fff; box-shadow:0 10px 32px #19345305; color:#30445e; font-size:1.05rem; line-height:1.9; }
+body:not(.home-page) .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr) 240px; gap:36px; }
+body:not(.home-page) .intro-thumbnail { border:1px solid #e2eaf4; border-radius:18px; box-shadow:0 12px 26px #17375a0a; }
+body:not(.home-page) .info-section { padding:34px; margin:30px 0; border-color:#e0e7f1; border-radius:22px; background:#fff; box-shadow:0 6px 24px #19345304; }
+body:not(.home-page) .info-section h3 { font-size:1.2rem; color:#1b3e70; border-color:#e6ecf5; padding-bottom:18px; margin-bottom:22px; letter-spacing:-.025em; }
+body:not(.home-page) .info-section p { max-width:54em; font-size:1.05rem; line-height:1.95; color:#30445e; }
+body:not(.home-page) .info-tip { font-size:.95rem; color:#30445e; line-height:1.9; }
+body:not(.home-page) .info-tip { border-left:3px solid #8aabda; border-radius:12px; background:#eff4fc; }
+body:not(.home-page) .banner-wrap { border:0; margin:30px 0; border-radius:18px; box-shadow:0 8px 28px #1934530a; }
+body:not(.home-page) .seo-q-box { padding:28px 30px; border-color:#dce6f5; border-radius:18px; background:#edf3fc; }
+body:not(.home-page) .seo-q-box h2 { color:#214a7f; font-size:1.18rem; }
+body:not(.home-page) .seo-q-box p { color:#30445e; font-size:1rem; }
+body:not(.home-page) .section-title { position:relative; margin:48px 0 24px; padding-bottom:18px; border-bottom:1px solid #dce4ef; color:#172f50; font-size:1.45rem; font-weight:800; letter-spacing:-.04em; }
+body:not(.home-page) .section-title::after { content:''; position:absolute; bottom:-1px; left:0; width:44px; height:3px; border-radius:3px; background:#1a4fa0; }
+body:not(.home-page) .card { padding:28px; border-color:#dfe7f2; border-radius:20px; gap:28px; box-shadow:0 4px 18px #19345304; transition:transform .2s,border-color .2s,box-shadow .2s; }
+body:not(.home-page) .card:hover { transform:translateY(-2px); border-color:#afc7e6; box-shadow:0 12px 28px #1934530b; }
+body:not(.home-page) .card-thumb { width:144px; min-width:144px; height:144px; border-radius:14px; }
+body:not(.home-page) .card-thumb img { border-radius:14px; }
+body:not(.home-page) .card-name { font-size:1.24rem; color:#18395f; margin-bottom:10px; line-height:1.55; }
+body:not(.home-page) .card-badge { padding:4px 11px; background:#edf3fc; color:#38649c; font-size:.71rem; }
+body:not(.home-page) .card-info { font-size:1rem; color:#30445e; line-height:1.9; }
+body:not(.home-page) .card-info span { color:#45566e; font-size:.9rem; }
+body:not(.home-page) .card-links { gap:9px; }
+body:not(.home-page) .map-btn { min-height:46px; padding:11px 17px; border:1px solid transparent; border-radius:9px; font-size:.94rem; font-weight:700; text-decoration:none; }
+body:not(.home-page) .map-btn.naver { background:#edf8f2; color:#137744; border-color:#d8ecdf; }
+body:not(.home-page) .map-btn.google { background:#edf2fa; color:#315b91; border-color:#dfe8f5; }
+body:not(.home-page) .map-btn.consult { background:#fff2e9; color:#a54b20; border-color:#f8e5d8; }
+body:not(.home-page) .map-btn.phone { background:#1a4fa0; color:#fff; border-color:#1a4fa0; box-shadow:0 4px 10px #1a4fa00d; }
+body:not(.home-page) .price-section { padding:38px 30px 28px; border-color:#e0e7f1; border-radius:22px; box-shadow:0 6px 24px #19345304; }
+body:not(.home-page) .price-section__title { color:#172f50; font-size:1.65rem; }
+body:not(.home-page) .price-section__sub { color:#45566e; font-size:1rem; margin:12px 0 30px; }
+body:not(.home-page) .price-note { font-size:.94rem; color:#45566e; }
+body:not(.home-page) .price-table-wrap { border-radius:16px; border-color:#e0e7f2; }
+body:not(.home-page) .price-table thead tr { background:#eaf0fa; color:#234775; }
+body:not(.home-page) .price-table thead th { font-size:.92rem; padding:18px 14px; }
+body:not(.home-page) .price-table tbody td { padding:23px 14px; font-size:.97rem; color:#30445e; }
+body:not(.home-page) .price-table small { font-size:.9rem; color:#45566e; }
+body:not(.home-page) .price-table tbody tr { border-color:#edf0f6; }
+body:not(.home-page) .pt-img { border:1px solid #edf1f7; background:#f4f7fc; }
+body:not(.home-page) .process-section { padding:38px 30px 30px; border:1px solid #234f8c; border-radius:22px; background:linear-gradient(120deg,#153968,#1a4fa0); }
+body:not(.home-page) .process-section__title { font-size:1.6rem; }
+body:not(.home-page) .process-step { background:#ffffff09; border-color:#ffffff26; }
+body:not(.home-page) .step-num { border-radius:12px; background:#ffffff1a; color:#fff; font-weight:800; }
+body:not(.home-page) .step-desc { color:#edf4ff; font-size:.92rem; }
+body:not(.home-page) .faq-item { border-color:#e0e7f1; border-radius:14px; box-shadow:0 3px 12px #19345302; }
+body:not(.home-page) .faq-q { padding:23px 26px; font-size:1.08rem; color:#203954; gap:18px; }
+body:not(.home-page) .faq-q::after { display:flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 30px; border-radius:50%; background:#f0f4fb; font-size:1.2rem; }
+body:not(.home-page) .faq-item.open .faq-q { background:#edf3fc; color:#1a4fa0; }
+body:not(.home-page) .faq-a { padding:26px; font-size:1rem; line-height:1.95; color:#30445e; }
+body:not(.home-page) .list a { border-color:#e0e7f2; border-radius:15px; font-size:.94rem; text-decoration:none; box-shadow:0 4px 14px #19345303; }
+body:not(.home-page) .site-footer { padding:36px 24px; border-top:1px solid #203d62; background:#122b4b; color:#a9bbd2; }
+@media(max-width:900px) {
+  body:not(.home-page) .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr) 190px; gap:26px; }
+}
+@media(max-width:600px) {
+  body:not(.home-page) .site-header { padding:36px 22px; }
+  body:not(.home-page) .site-header h1 { font-size:1.9rem; margin-bottom:18px; line-height:1.4; letter-spacing:-.025em; }
+  body:not(.home-page) .site-header h1::before { margin-bottom:20px; width:36px; height:3px; }
+  body:not(.home-page) .site-header p { margin-left:0; font-size:1rem; line-height:1.9; }
+  body:not(.home-page) .wrap { padding-top:20px; padding-bottom:52px; }
+  body:not(.home-page) .crumb { padding:13px 16px; margin-bottom:20px; font-size:.85rem; }
+  body:not(.home-page) .intro-box { padding:25px 22px; border-radius:18px; font-size:1rem; }
+  body:not(.home-page) .intro-box--with-thumbnail { grid-template-columns:minmax(0,1fr); gap:24px; }
+  body:not(.home-page) .intro-thumbnail { max-width:260px; justify-self:center; }
+  body:not(.home-page) .info-section { padding:26px 22px; border-radius:18px; }
+  body:not(.home-page) .info-section h3 { font-size:1.1rem; }
+  body:not(.home-page) .info-section p { font-size:1rem; }
+  body:not(.home-page) .section-title { font-size:1.23rem; margin-top:36px; }
+  body:not(.home-page) .banner-wrap { border-radius:12px; margin:26px 0; }
+  body:not(.home-page) .seo-q-box { padding:24px 22px; }
+  body:not(.home-page) .seo-q-box h2 { font-size:1.05rem; }
+  body:not(.home-page) .card { padding:24px 22px; gap:20px; border-radius:18px; }
+  body:not(.home-page) .card-thumb { width:100%; min-width:0; height:190px; }
+  body:not(.home-page) .card-name { font-size:1.12rem; }
+  body:not(.home-page) .card-info { font-size:1rem; }
+  body:not(.home-page) .map-btn { padding:10px 9px; font-size:.92rem; }
+  body:not(.home-page) .price-section { padding:28px 16px 22px; border-radius:18px; }
+  body:not(.home-page) .price-section__title,body:not(.home-page) .process-section__title { font-size:1.3rem; }
+  body:not(.home-page) .price-section__sub { font-size:1rem; margin-bottom:24px; }
+  body:not(.home-page) .process-section { padding:28px 18px 22px; border-radius:18px; }
+  body:not(.home-page) .faq-q { padding:20px; font-size:1rem; gap:12px; }
+  body:not(.home-page) .faq-a { padding:22px; font-size:1rem; }
+}
+@media(prefers-reduced-motion:reduce) { body:not(.home-page) .card { transition:none; } }
+
+/* Transparent product, shared thumbnail surface; preserve the existing zoom. */
+.price-table .pt-router .pt-img img,
+.price-table .pt-router .pt-img:hover img { background:transparent; border:0; border-radius:0; box-shadow:none; }

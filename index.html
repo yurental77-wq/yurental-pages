@@ -88,14 +88,20 @@
     @media (max-width:640px) { .card-grid { grid-template-columns:1fr; } }
     @media (max-width:560px) { .card { flex-direction:column; } .card-thumb { width:100%; height:160px; } .site-header h1 { font-size:1.2rem; } }
   </style>
-  <link rel="stylesheet" href="./assets/site.css?v=20261007" />
+  <link rel="stylesheet" href="./assets/site.css?v=20261028f" />
+  <link rel="stylesheet" href="./assets/home.css?v=20261028" />
   <script src="./assets/site.js?v=20261007" defer></script>
 </head>
-<body>
+<body class="home-page">
 
 <header class="site-header">
+  <div class="home-hero-layout">
+  <div class="home-hero-copy">
   <h1>전국 복합기렌탈 주요 도시 16곳</h1>
   <p>서울·부산·인천·대구·대전·광주·울산·수원·창원·전주 등 전국 지역별 복합기 임대 정보</p>
+  </div>
+  <div class="home-hero-visual" aria-hidden="true"><img src="./assets/copier-intro.webp" alt="" width="720" height="720" fetchpriority="high" /></div>
+  </div>
 </header>
 
 <div class="wrap">
@@ -187,7 +193,7 @@
             <td class="pt-price">월 100,000원~</td>
           </tr>
           <tr class="pt-router">
-            <td><div class="pt-img"><img src="https://yurental.com/rental/assets/product-showcase/cnr-5g500-white-v1.webp" alt="CNSLINK CNR-5G500 5G 라우터" loading="lazy" decoding="async"></div></td>
+            <td><div class="pt-img"><img src="assets/cnr-5g500-cutout.webp" alt="CNSLINK CNR-5G500 5G 라우터" loading="lazy" decoding="async"></div></td>
             <td><strong>5G 라우터 CNR-5G500 <span class="pt-tag">무선공유기</span></strong><br><small>AI 교육·공사현장·임시 사무실</small></td>
             <td>5G·LTE 라우터</td>
             <td>해당 없음</td>
