@@ -39,9 +39,9 @@ function createRedirects(rows) {
 function redirectRules() {
   const lines = ['# EMD-URL-REDIRECTS:START'];
   for (const base of ['/emd', '/router/emd']) {
-    lines.push(`${base}/:province/:district/:leaf/*  /.netlify/functions/emd-redirect?from=${base}/:province/:district/:leaf/&tail=:splat  200`);
-    lines.push(`${base}/:province/:district/:leaf  /.netlify/functions/emd-redirect?from=${base}/:province/:district/:leaf  200`);
-    lines.push(`${base}/:province/:district  /.netlify/functions/emd-redirect?from=${base}/:province/:district  200`);
+    lines.push(`${base}/:province/:district/:leaf/*  /.netlify/functions/emd-redirect  200`);
+    lines.push(`${base}/:province/:district/:leaf  /.netlify/functions/emd-redirect  200`);
+    lines.push(`${base}/:province/:district  /.netlify/functions/emd-redirect  200`);
   }
   lines.push('# EMD-URL-REDIRECTS:END');
   return lines.join('\n') + '\n';

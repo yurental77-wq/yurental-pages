@@ -3,10 +3,20 @@ const { routes } = require('./data/emd_url_redirects.json');
 
 exports.handler = async event => {
   const params = event.queryStringParameters || {};
-  const tail = params.tail || '';
+  // Netlify의 200 rewrite는 원래 요청 URL을 event.path/rawUrl에 전달한다.
+  // rewrite 목적지에 붙인 쿼리 값을 원래 요청의 경로로 간주하지 않는다.
+  const isOriginalPath = value => /^\/(?:router\/)?emd\//.test(value || '');
+  let rawPath = '';
+  if (event.rawUrl) {
+    try { rawPath = new URL(event.rawUrl).pathname; }
+    catch { return { statusCode: 400, body: 'Bad Request' }; }
+  }
+  const requestPath = [event.path, rawPath].find(isOriginalPath) || '';
+  const originalRequest = isOriginalPath(requestPath);
+  const tail = originalRequest ? '' : (params.tail || '');
   if (tail && tail !== 'index.html') return { statusCode: 404, body: 'Not Found' };
   let from;
-  try { from = decodeURIComponent(params.from || '').replace(/index\.html$/, '').replace(/\/?$/, '/'); }
+  try { from = decodeURIComponent(originalRequest ? requestPath : (params.from || '')).replace(/index\.html$/, '').replace(/\/?$/, '/'); }
   catch { return { statusCode: 400, body: 'Bad Request' }; }
   if (!Object.hasOwn(routes, from)) return { statusCode: 404, body: 'Not Found' };
   const target = routes[from];

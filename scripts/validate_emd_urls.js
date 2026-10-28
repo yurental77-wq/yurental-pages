@@ -12,7 +12,7 @@ assert.deepEqual(routes, createRedirects(rows));
 const encode = value => value.split('/').map(encodeURIComponent).join('/');
 const fileFor = value => path.join(ROOT, ...value.split('/').filter(Boolean), 'index.html');
 const rules = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf8').split(/\r?\n/)
-  .filter(line => line.includes('/.netlify/functions/emd-redirect?')).map(line => {
+  .filter(line => line.includes('/.netlify/functions/emd-redirect')).map(line => {
     const [from, to, status] = line.trim().split(/\s+/);
     assert.equal(status, '200'); // 기존 정적 파일은 가로채지 않는다.
     const keys = [];
@@ -31,7 +31,8 @@ async function throughRules(urlPath) {
     const values = Object.fromEntries(rule.keys.map((key, index) => [key, match[index + 1]]));
     const rewrite = rule.to.replace(/:(\w+)/g, (_, key) => encodeURIComponent(values[key] || ''));
     const params = Object.fromEntries(new URL(rewrite, 'https://hanarentalbj.kr').searchParams);
-    return handler({ queryStringParameters: params });
+    // 실 Netlify와 같이 목적지 쿼리가 아닌 원본 요청 경로를 전달한다.
+    return handler({ path: urlPath, rawUrl: 'https://hanarentalbj.kr' + encodeURI(decodeURI(urlPath)), queryStringParameters: params });
   }
   throw new Error('리다이렉트 라우팅 규칙 없음: ' + urlPath);
 }
@@ -55,6 +56,12 @@ async function throughRules(urlPath) {
   const sample = Object.keys(routes)[0];
   const query = await handler({ queryStringParameters: { from: sample, utm_source: 'test' } });
   assert.ok(query.headers.Location.endsWith('?utm_source=test'));
+  const originalQuery = await handler({ path: sample, rawUrl: 'https://hanarentalbj.kr' + encodeURI(sample),
+    queryStringParameters: { from: '//evil.example/', utm_source: 'original' } });
+  assert.equal(originalQuery.statusCode, 301);
+  assert.equal(originalQuery.headers.Location, encode(routes[sample]) + '?utm_source=original');
+  assert.equal((await handler({ path: sample, rawUrl: 'https://hanarentalbj.kr/.netlify/functions/emd-redirect' })).statusCode, 301);
+  assert.equal((await handler({ path: '/.netlify/functions/emd-redirect', rawUrl: 'https://hanarentalbj.kr' + encodeURI(sample) })).statusCode, 301);
   assert.equal((await handler({ queryStringParameters: { from: '//evil.example/' } })).statusCode, 404);
   assert.equal((await handler({ queryStringParameters: { from: sample, tail: 'bad.html' } })).statusCode, 404);
   assert.equal((await handler({ queryStringParameters: { from: '%' } })).statusCode, 400);
